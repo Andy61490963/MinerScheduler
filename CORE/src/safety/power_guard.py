@@ -19,7 +19,7 @@ sys.path.insert(0, str(ROOT))
 sys.stdout.reconfigure(encoding='utf-8')
 sys.stderr.reconfigure(encoding='utf-8')
 from TEST_顯卡讀值 import ReadOnlyGpu
-from TEST_排程規則 import BASE, FAN_LIMIT, SETTLE, CORE_RAISE, CORE_BACKOFF, CLOCK_STEP, TAIPEI, daytime, decide, fan_check, stable_temperatures, raise_margin, clock_reading_ok, period_profile, mining_allowed, temporary_trial, trial_raise_allowed, configured_target
+from TEST_排程規則 import BASE, FAN_LIMIT, SETTLE, CORE_RAISE, CORE_BACKOFF, CLOCK_STEP, TAIPEI, daytime, decide, fan_check, stable_temperatures, raise_margin, clock_reading_ok, period_profile, mining_allowed, temporary_trial, trial_raise_allowed, configured_target, transition_profile
 from TEST_啟動核對 import read_shared_text
 from TEST_執行工具 import EXPECTED as EXPECTED_MINER
 from TEST_顯存節能 import MemoryPolicy
@@ -386,9 +386,10 @@ def main(read_only=False, seconds=10):
                         current = BASE
                     if clock_limit != 900:
                         apply_clocks(900)
+                    # 跨時段不可直接解除上一時段的熱保護；必要時從150W逐步回升。
+                    ceiling, cooling_until = transition_profile(
+                        profile, wanted, ceiling, cooling_until, now)
                     profile = wanted
-                    ceiling = profile[0]
-                    cooling_until = now
                     previous_peak = peak
                     event(f"切換{'平日' if peak else '離峰'}{profile[0]}W及{profile[2]}%風扇。")
                 # 執行中接受降瓦，升瓦或核心／風扇變更需重新啟動核對。

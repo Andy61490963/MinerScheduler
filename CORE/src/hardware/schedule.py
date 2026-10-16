@@ -95,26 +95,46 @@ def time_minutes(value):
     return int(hour) * 60 + int(minute)
 
 
+def validated_schedule_windows(schedule):
+    """設定 API 與硬體排程共用的時段邊界驗證。"""
+    if not isinstance(schedule, dict):
+        raise ValueError('功耗排程格式不符。')
+    weekend_enabled = schedule.get('週末使用平日功耗', False)
+    if type(weekend_enabled) is not bool:
+        raise ValueError('週末時段開關必須是布林值。')
+    windows = {}
+    for label, start_key, end_key in (
+        ('weekday', '平日時段開始', '平日時段結束'),
+        ('weekend', '週末時段開始', '週末時段結束'),
+    ):
+        start = time_minutes(schedule.get(start_key, '09:15'))
+        end = time_minutes(schedule.get(end_key, '17:45'))
+        if start >= end:
+            raise ValueError('同一天的排程結束時間必須晚於開始時間。')
+        windows[label] = (start, end)
+    return windows, weekend_enabled
+
+
 def daytime(moment=None, schedule=None):
-    """平日、週末可分別指定使用日間功耗的時窗，其餘都套用離峰功耗。"""
+    """統一判斷本地時段；週末未啟用時始終使用離峰功耗。"""
     moment = (moment or datetime.now(timezone.utc)).astimezone(TAIPEI)
     schedule = TIME_SCHEDULE if schedule is None else schedule
-    if moment.weekday() < 5:
-        start = schedule.get('平日時段開始', '09:15')
-        end = schedule.get('平日時段結束', '17:45')
-    else:
-        enabled = schedule.get('週末使用平日功耗', False)
-        if type(enabled) is not bool:
-            raise ValueError('週末時段開關必須是布林值。')
-        if not enabled:
-            return False
-        start = schedule.get('週末時段開始', '09:15')
-        end = schedule.get('週末時段結束', '17:45')
-    begin, finish = time_minutes(start), time_minutes(end)
-    if begin >= finish:
-        raise ValueError('同一天的排程結束時間必須晚於開始時間。')
+    windows, weekend_enabled = validated_schedule_windows(schedule)
+    if moment.weekday() >= 5 and not weekend_enabled:
+        return False
+    begin, end = windows['weekday' if moment.weekday() < 5 else 'weekend']
     minutes = moment.hour * 60 + moment.minute
-    return begin <= minutes < finish
+    return begin <= minutes < end
+
+
+def transition_profile(previous_profile, new_profile, ceiling, cooling_until, now):
+    """跨時段先回150W。若正處於熱保護，保留冷卻期限並由150W漸進恢復。"""
+    if previous_profile is None:
+        return new_profile[0], now
+    thermal_restricted = cooling_until > now or ceiling < previous_profile[0]
+    if thermal_restricted:
+        return BASE, max(cooling_until, now)
+    return new_profile[0], now
 
 
 def mining_allowed(schedule, moment=None):
@@ -149,7 +169,7 @@ def decide(active, ready, current, ceiling, sample, seconds, stable, utilization
     if not active or not ready:
         return BASE, '其他時段或尚未通過持續負載核對，維持150W。'
     if sample['核心C'] >= CORE_BACKOFF:
-        return max(BASE, current - 20), 'GPU核心達80°C，降低功耗；風扇維持核准時段目標。'
+        return max(BASE, current - 20), 'GPU核心達75°C，降低功耗；風扇維持核准時段目標。'
     cool = sample['核心C'] <= CORE_RAISE
     if current < ceiling and seconds >= SETTLE and stable and cool and utilization >= 80:
         return min(ceiling, current + STEP), '溫度穩定且有餘裕，增加10W。'
@@ -168,16 +188,17 @@ def configured_target(profile, current, ceiling, cooling_until, now, sample,
                or sample['顯存C'] >= MEMORY_BACKOFF)
     changed_ago = float('inf') if last_change_at is None else now - last_change_at
 
+    # 設定值可在運行期間降瓦；任何分支都不得回傳高於目前核准時段的目標。
+    ceiling = min(ceiling, profile[0])
     if too_hot:
         cooling_until = max(cooling_until, now + RECOVERY_HOLD)
         if current > BASE and changed_ago >= THERMAL_INTERVAL:
-            # 一次降 40W，限制寫入頻率；避免每個 100ms 迴圈都重設 NVML 功耗。
-            target = max(BASE, current - THERMAL_STEP)
-            ceiling = min(ceiling, target)
-            reason = '溫度接近限制，分級降低40W且繼續挖礦；必要時仍執行停機保護。'
+            # 一次最多降40W；若時段設定更低，須優先遵守新上限。
+            ceiling = min(ceiling, max(BASE, current - THERMAL_STEP))
+            reason = '溫度接近限制，分級降低40W或直接降至新上限並繼續挖礦；緊急停機保護仍保留。'
         else:
-            target = min(current, ceiling, profile[0])
             reason = '溫度偏高，維持目前降瓦設定並監控下一筆感測資料。'
+        target = min(current, ceiling)
     else:
         recovered = (now >= cooling_until and changed_ago >= RECOVERY_INTERVAL
                      and sample['核心C'] <= CORE_RAISE and sample['熱點C'] <= 90

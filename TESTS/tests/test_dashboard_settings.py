@@ -2,6 +2,7 @@ from context import BUILD
 import sys
 """使用隔離設定與假硬體核對網頁控制，不影響正在運行的礦工。"""
 import copy
+from datetime import datetime, timezone
 import importlib.util
 import json
 from pathlib import Path
@@ -83,6 +84,27 @@ class SettingsTests(unittest.TestCase):
                 elif identifier in settings.BOARD_IDS:self.assertEqual(after['ManualControlValue'],60)
                 else:self.assertEqual(before,after)
 
+    def test_guard_verifies_new_window_not_cached_previous_window(self):
+        import TEST_排程規則 as rules
+        plan = settings.prepare(self.payload(
+            day_watts=200, night_watts=150,
+            weekday_start='07:00', weekday_end='09:00'))
+        values = plan['values']
+        saved = plan['documents'][settings.FILES[0]]['功耗排程']
+        guard = {'更新時間UTC': datetime.now(timezone.utc).isoformat(),
+                 '狀態': '排程保護已就緒',
+                 '持續負載核對通過': True,
+                 '時段功耗上限W': 200,
+                 '風扇目標百分比': values['gpu_fan'],
+                 '目標功耗上限W': 180,
+                 '顯卡': {'功耗上限W': 180}}
+        # 2026/10/16 08:30台灣時間：新設定是平日功耗，舊快取09:15才開始。
+        with patch.object(rules, 'datetime') as now, \
+             patch('TEST_即時通道.read_channel', return_value=guard), \
+             patch.object(settings.time, 'sleep', side_effect=AssertionError('錯用舊時段進入重試')):
+            now.now.return_value = datetime(2026, 10, 16, 0, 30, tzinfo=timezone.utc)
+            self.assertEqual(settings.verify_guard(values, lambda: None, saved), 180)
+
     def test_custom_weekday_and_weekend_times_persist(self):
         requested = self.payload(weekday_start='07:00', weekday_end='19:00',
                                  weekend_peak=True, weekend_start='10:00',
@@ -147,6 +169,8 @@ class SettingsTests(unittest.TestCase):
             elif resume:
                 start.assert_called_once()
                 guard.assert_called_once()
+                self.assertEqual(guard.call_args.args[2],
+                                 plan['documents'][settings.FILES[0]]['功耗排程'])
                 self.assertFalse(stop.exists())
                 self.assertEqual(control.snapshot()['phase'],'success')
             else:

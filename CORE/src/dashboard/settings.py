@@ -2,7 +2,6 @@
 from datetime import datetime, timezone
 import hashlib
 import json
-import re
 from pathlib import Path
 import subprocess
 import shutil
@@ -21,7 +20,6 @@ TIME_FIELDS = {
     'weekend_start': ('週末時段開始', '09:15'),
     'weekend_end': ('週末時段結束', '17:45'),
 }
-TIME_PATTERN = re.compile(r'(?:[01][0-9]|2[0-3]):[0-5][0-9]')
 LABELS = {'day_watts':'平日日間功耗','night_watts':'離峰與週末功耗','gpu_fan':'顯卡風扇','board_fan':'主機板風扇'}
 GPU_IDS = {'NVApiWrapper/0-AD102-A/control/0', 'NVApiWrapper/0-AD102-A/control/1'}
 BOARD_IDS = {'/lpc/it8696e/control/0', '/lpc/it8696e/control/1', '/lpc/it8696e/control/5'}
@@ -65,14 +63,10 @@ def prepare(payload):
         value = payload[key]
         if type(value) is not int or not low <= value <= high or (value-low) % step:
             raise ValueError(f'{LABELS[key]}必須介於 {low}～{high}，每次 {step}。')
-    for key in TIME_FIELDS:
-        value = payload[key]
-        if type(value) is not str or TIME_PATTERN.fullmatch(value) is None:
-            raise ValueError(f'{key} 時間必須為 00:00～23:59。')
-    if payload['weekday_start'] >= payload['weekday_end'] or payload['weekend_start'] >= payload['weekend_end']:
-        raise ValueError('每個時段的結束時間必須晚於開始時間；目前不支援跨午夜的區間。')
-    if type(payload['weekend_peak']) is not bool:
-        raise ValueError('週末時段開關必須是布林值。')
+    from TEST_排程規則 import validated_schedule_windows
+    proposed_window = {field: payload[key] for key, (field, _) in TIME_FIELDS.items()}
+    proposed_window['週末使用平日功耗'] = payload['weekend_peak']
+    validated_schedule_windows(proposed_window)
     bundle = read_bundle()
     if payload['revision'] != revision(bundle):
         raise ValueError('設定已被其他操作變更，請按「重新讀取」後再調整。')
@@ -211,14 +205,16 @@ def verify_fans(values, checkpoint):
     raise RuntimeError('五組風扇未能達到設定，保留停挖；請查看風扇與操作 LOG。')
 
 
-def verify_guard(values, checkpoint):
+def verify_guard(values, checkpoint, schedule):
     from TEST_即時通道 import read_channel
-    from TEST_排程規則 import daytime
+    from TEST_排程規則 import daytime, validated_schedule_windows
+    # 明確傳入這次保存的設定，不能使用監控程序啟動時快取的舊時段。
+    validated_schedule_windows(schedule)
     deadline = time.monotonic() + 150
     while time.monotonic() < deadline:
         checkpoint()
         data = read_channel('guard') or {}
-        expected = values['day_watts' if daytime() else 'night_watts']
+        expected = values['day_watts' if daytime(schedule=schedule) else 'night_watts']
         try:
             age = (datetime.now(timezone.utc) - datetime.fromisoformat(data['更新時間UTC'])).total_seconds()
         except (ValueError, KeyError, TypeError):

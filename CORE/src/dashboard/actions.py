@@ -219,7 +219,7 @@ class MiningActions:
                     raise RuntimeError(self.state['message'])
             expected=None
             update('已重新開始挖礦，等待一分鐘負載核對及功耗目標確認。')
-            power=settings.verify_guard(plan['values'],checkpoint)
+            power=settings.verify_guard(plan['values'],checkpoint,plan['documents'][settings.FILES[0]]['功耗排程'])
             outcome=('success',f'設定已套用，五組風扇與保護已確認；目前保護目標{power}W，溫控優先。')
         except Exception as exc:
             if touched:

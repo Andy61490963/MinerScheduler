@@ -11,10 +11,15 @@ try {
     $weekendStart=if ($schedule.週末時段開始) { [string]$schedule.週末時段開始 } else { '09:15' }
     $weekendEnd=if ($schedule.週末時段結束) { [string]$schedule.週末時段結束 } else { '17:45' }
     $weekendEnabled=$schedule.週末使用平日功耗 -eq $true
-    foreach ($pair in @(@($weekdayStart,$weekdayEnd),@($weekendStart,$weekendEnd))) {
-        $first=[TimeSpan]::ParseExact($pair[0],'hh\:mm',[Globalization.CultureInfo]::InvariantCulture)
-        $last=[TimeSpan]::ParseExact($pair[1],'hh\:mm',[Globalization.CultureInfo]::InvariantCulture)
-        if ($first -ge $last) { throw '排程結束時間必須晚於開始時間。' }
+    # PowerShell 使用具名欄位以避免巢狀陣列展平，時段格式與 Python 共用 HH:mm 規則。
+    $windows=@(
+        @{ Name='平日'; Start=$weekdayStart; End=$weekdayEnd },
+        @{ Name='週末'; Start=$weekendStart; End=$weekendEnd }
+    )
+    foreach ($window in $windows) {
+        $first=[TimeSpan]::ParseExact($window.Start,'hh\:mm',[Globalization.CultureInfo]::InvariantCulture)
+        $last=[TimeSpan]::ParseExact($window.End,'hh\:mm',[Globalization.CultureInfo]::InvariantCulture)
+        if ($first -ge $last) { throw ($window.Name+'排程結束時間必須晚於開始時間。') }
     }
     $service=New-Object -ComObject Schedule.Service
     $service.Connect()
