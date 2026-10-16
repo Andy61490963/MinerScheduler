@@ -2,6 +2,7 @@
 from datetime import datetime, timezone
 import hashlib
 import json
+import re
 from pathlib import Path
 import subprocess
 import shutil
@@ -14,6 +15,13 @@ FILES = ('TEST_設定.json', 'TEST_風扇/Configurations/TEST_尖峰風扇70.jso
          'TEST_風扇/Configurations/TEST_離峰風扇100.json', 'TEST_風扇/Configurations/userConfig.json')
 FIELDS = {'day_watts': (150, 450, 10), 'night_watts': (150, 450, 10),
           'gpu_fan': (50, 100, 1), 'board_fan': (30, 100, 1)}
+TIME_FIELDS = {
+    'weekday_start': ('平日時段開始', '09:15'),
+    'weekday_end': ('平日時段結束', '17:45'),
+    'weekend_start': ('週末時段開始', '09:15'),
+    'weekend_end': ('週末時段結束', '17:45'),
+}
+TIME_PATTERN = re.compile(r'(?:[01][0-9]|2[0-3]):[0-5][0-9]')
 LABELS = {'day_watts':'平日日間功耗','night_watts':'離峰與週末功耗','gpu_fan':'顯卡風扇','board_fan':'主機板風扇'}
 GPU_IDS = {'NVApiWrapper/0-AD102-A/control/0', 'NVApiWrapper/0-AD102-A/control/1'}
 BOARD_IDS = {'/lpc/it8696e/control/0', '/lpc/it8696e/control/1', '/lpc/it8696e/control/5'}
@@ -34,8 +42,13 @@ def revision(bundle):
 
 def values_from(bundle):
     schedule = json.loads(bundle[FILES[0]])['功耗排程']
-    return {'day_watts': schedule['平日固定功耗上限W'], 'night_watts': schedule['離峰固定功耗上限W'],
-            'gpu_fan': schedule['尖峰風扇百分比'], 'board_fan': schedule['主機板風扇百分比']}
+    values = {'day_watts': schedule['平日固定功耗上限W'],
+              'night_watts': schedule['離峰固定功耗上限W'],
+              'gpu_fan': schedule['尖峰風扇百分比'],
+              'board_fan': schedule['主機板風扇百分比']}
+    values.update({key: schedule.get(field, default) for key, (field, default) in TIME_FIELDS.items()})
+    values['weekend_peak'] = schedule.get('週末使用平日功耗', False)
+    return values
 
 
 def public_settings():
@@ -45,29 +58,46 @@ def public_settings():
 
 
 def prepare(payload):
-    if not isinstance(payload, dict) or set(payload) != set(FIELDS) | {'revision'}:
+    keys = set(FIELDS) | set(TIME_FIELDS) | {'weekend_peak'}
+    if not isinstance(payload, dict) or set(payload) != keys | {'revision'}:
         raise ValueError('設定欄位不符。')
     for key, (low, high, step) in FIELDS.items():
         value = payload[key]
         if type(value) is not int or not low <= value <= high or (value-low) % step:
             raise ValueError(f'{LABELS[key]}必須介於 {low}～{high}，每次 {step}。')
+    for key in TIME_FIELDS:
+        value = payload[key]
+        if type(value) is not str or TIME_PATTERN.fullmatch(value) is None:
+            raise ValueError(f'{key} 時間必須為 00:00～23:59。')
+    if payload['weekday_start'] >= payload['weekday_end'] or payload['weekend_start'] >= payload['weekend_end']:
+        raise ValueError('每個時段的結束時間必須晚於開始時間；目前不支援跨午夜的區間。')
+    if type(payload['weekend_peak']) is not bool:
+        raise ValueError('週末時段開關必須是布林值。')
     bundle = read_bundle()
     if payload['revision'] != revision(bundle):
         raise ValueError('設定已被其他操作變更，請按「重新讀取」後再調整。')
-    requested = {key: payload[key] for key in FIELDS}
+
+    requested = {key: payload[key] for key in keys}
     schedule = json.loads(bundle[FILES[0]])['功耗排程']
     unchanged = requested == values_from(bundle) and schedule['離峰風扇百分比'] == requested['gpu_fan']
     documents = {name: json.loads(content) for name, content in bundle.items()}
     day, night, gpu, board = (requested[key] for key in FIELDS)
+    weekday_window = f"{requested['weekday_start']}～{requested['weekday_end']}"
+    weekend_window = f"{requested['weekend_start']}～{requested['weekend_end']}"
+    weekend_text = (f"週末{weekend_window}使用平日功耗，其餘離峰"
+                    if requested['weekend_peak'] else "週末全天離峰")
+    description = f"平日{weekday_window}為{day}W；{weekend_text}；離峰{night}W；顯卡風扇{gpu}%，主機板風扇{board}%；溫度保護優先。"
     config = documents[FILES[0]]
     target = config['功耗排程']
-    description = f'平日09:15至17:45為{day}W；離峰及週末{night}W；顯卡兩組{gpu}%；主機板三組{board}%；溫度保護優先。'
     config['運作模式'] = description
     target.update({'平日固定功耗上限W': day, '離峰固定功耗上限W': night, '其他時段功耗上限W': night,
                    '最高可嘗試功耗W': max(day, night), '尖峰風扇百分比': gpu, '離峰風扇百分比': gpu,
                    '主機板風扇百分比': board, '離峰逐檔測試': False,
-                   '功耗控制方式': description + '核心80°C降瓦與82°C停止保留。', '挖礦時段說明': description,
+                   '功耗控制方式': description + '核心75°C起分級降瓦；核心82°C或感測失效仍停機。',
+                   '挖礦時段說明': description,
                    '風扇控制': f'RTX 4090兩組固定{gpu}%；主機板Fan #1、#2、#6固定{board}%；保護優先。'})
+    target.update({field: requested[key] for key, (field, _) in TIME_FIELDS.items()})
+    target['週末使用平日功耗'] = requested['weekend_peak']
     for name in FILES[1:]:
         controls = documents[name]['FanControl']['Controls']
         matched = set()

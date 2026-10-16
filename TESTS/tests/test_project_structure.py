@@ -54,7 +54,7 @@ class ProjectStructureTests(unittest.TestCase):
 
     def test_captured_config_is_used_without_changing_limits(self):
         config = json.loads((context.BUILD / 'TEST_設定.json').read_text(encoding='utf-8'))
-        self.assertEqual(config['功耗排程']['核心降瓦溫度C'], 80)
+        self.assertEqual(config['功耗排程']['核心降瓦溫度C'], 75)
         self.assertEqual(config['功耗排程']['核心停止溫度C'], 82)
         self.assertEqual(config['功耗排程']['主機板風扇百分比'], 50)
         self.assertEqual(config['功耗排程']['尖峰風扇百分比'], 80)

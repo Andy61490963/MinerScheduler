@@ -106,9 +106,9 @@ def run_schedule(stop_path):
         config=json.loads(startup.read_shared_text(ROOT/'TEST_設定.json'))
         if not mining_allowed(config['功耗排程']):
             if not waiting:
-                print('離峰停止挖礦，等待台灣時間平日09:15。',flush=True)
+                print('目前不在可挖礦時段，等待下一個核准時段。',flush=True)
             waiting=True
-            runtime.save({'狀態':'離峰停止挖礦，等待平日09:15','原因':'僅於台灣時間平日09:15至17:45挖礦。',
+            runtime.save({'狀態':'離峰停止挖礦，等待下一個核准時段','原因':'目前不在保存的核准挖礦時段內。',
                           '礦工PID':None,'監控PID':os.getpid(),'持續負載核對通過':False,'CPU挖礦':False})
             time.sleep(1)
             continue

@@ -2,36 +2,23 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="dark"><title>挖礦效率監控 · C:\test\CORE</title>
+  <meta name="color-scheme" content="dark"><title>MinerScheduler — GPU 監控</title>
   <link rel="icon" href="data:,"><link rel="stylesheet" href="/style.css"><script defer src="/app.js"></script>
 </head>
 <body>
 <div class="shell">
   <header class="topbar">
-    <div class="brand"><span class="brand-mark" aria-hidden="true">↗</span><span>TEST<span class="brand-divider">/</span>GPU MONITOR</span></div>
+    <div class="brand"><span class="brand-mark" aria-hidden="true">M</span><span>MINERSCHEDULER<span class="brand-divider">/</span>OPERATIONS</span></div>
     <div class="top-meta"><span class="local-dot"></span>本機監控 <span class="top-separator">|</span> <span id="clock">--:--:--</span><span class="zone">台灣時間</span></div>
   </header>
   <main>
     <section class="page-heading">
-      <div><div class="eyebrow">效能與散熱，一眼掌握</div><h1>挖礦效率監控<span class="gpu-tag">RTX 4090</span></h1><p class="subtitle">讀取現有挖礦紀錄，每 2 秒更新畫面。</p></div>
+      <div><div class="eyebrow">GPU TELEMETRY / LOCAL</div><h1>挖礦監控<span class="gpu-tag">RTX 4090</span></h1><p class="subtitle">GPU 資料每秒更新；算力依礦工實際回報更新。</p></div>
       <div class="heading-actions"><span id="live-badge" class="badge neutral"><i></i>連線中</span><button id="start-mining" class="start-button" type="button" disabled>▶ 開始挖礦</button><button id="stop-mining" class="stop-button" type="button" disabled>■ 停止挖礦</button><button id="pause" class="icon-button" type="button" aria-pressed="false">Ⅱ 暫停畫面</button></div>
     </section>
     <div id="connection-error" class="connection-error" role="status" hidden>連線中斷，正在重試。以下為最後一次讀值。</div>
     <div id="action-status" class="action-status" role="status" hidden></div>
     <div id="alerts" class="alerts" role="status"></div>
-    <section class="panel settings-panel" aria-labelledby="settings-title">
-      <div class="panel-heading"><div><h2 id="settings-title">功耗與風扇設定</h2><span class="panel-caption">保存後沿用至下次變更，重新開機仍保留</span></div><button id="reload-settings" class="icon-button" type="button">重新讀取</button></div>
-      <form id="settings-form">
-        <fieldset id="settings-fields" disabled><legend class="sr-only">調整功耗與風扇</legend><div class="settings-grid">
-          <label for="setting-day_watts">平日日間功耗<div class="setting-input"><input id="setting-day_watts" name="day_watts" type="number" min="150" max="450" step="10" required><span>W</span></div><small>週一至週五 09:15～17:45</small></label>
-          <label for="setting-night_watts">離峰與週末功耗<div class="setting-input"><input id="setting-night_watts" name="night_watts" type="number" min="150" max="450" step="10" required><span>W</span></div><small>其餘時間，150～450W／每次 10W</small></label>
-          <label for="setting-gpu_fan">顯卡兩組風扇<div class="setting-input"><input id="setting-gpu_fan" name="gpu_fan" type="number" min="50" max="100" step="1" required><span>%</span></div><small>兩組同步，50～100%</small></label>
-          <label for="setting-board_fan">主機板三組風扇<div class="setting-input"><input id="setting-board_fan" name="board_fan" type="number" min="30" max="100" step="1" required><span>%</span></div><small>Fan #1、#2、#6 同步，30～100%</small></label>
-        </div></fieldset>
-        <div class="settings-bottom"><p>套用會短暫停挖並重新核對；原本已停挖時保持停止。溫控會限制實際功耗，停止按鈕隨時優先。<br><span>重塗散熱膏後已完成450W短測；實際功耗仍受原廠上限與溫度保護限制。</span></p><button id="apply-settings" class="start-button" type="submit" disabled>套用設定</button></div>
-        <p id="settings-message" class="settings-message" role="status">正在讀取目前設定…</p>
-      </form>
-    </section>
     <section class="metrics" aria-label="主要效率指標">
       <article class="metric-card hash-card"><div class="card-label"><span class="mini-symbol cyan">↗</span>算力<span id="hash-age" class="small-tag">等待回報</span></div><div class="metric-number"><span id="hashrate">--</span><span class="unit">TH/s</span></div><div class="metric-bottom"><span>1 分鐘 <b id="hash-1m">--</b></span><span>15 分鐘 <b id="hash-15m">--</b></span></div></article>
       <article class="metric-card"><div class="card-label"><span class="mini-symbol amber">ϟ</span>GPU 實際耗電</div><div class="metric-number"><span id="power">--</span><span class="unit">W</span></div><div class="metric-bottom"><span>功耗上限 <b id="power-limit">--</b> W</span><span>負載 <b id="utilization">--</b>%</span></div></article>
@@ -40,8 +27,8 @@
     </section>
     <div class="main-grid">
       <section class="panel trend-panel" aria-labelledby="trend-title">
-        <div class="panel-heading"><div><h2 id="trend-title">效能趨勢</h2><span class="panel-caption" id="chart-subtitle">最近 15 分鐘</span></div><div class="segmented" aria-label="趨勢時間"><button type="button" data-range="5">5 分鐘</button><button class="selected" type="button" data-range="15" aria-pressed="true">15 分鐘</button></div></div>
-        <div class="chart-toolbar"><div class="chart-tabs" aria-label="趨勢指標"><button class="selected" type="button" data-metric="hashrate" aria-pressed="true">算力</button><button type="button" data-metric="power">耗電</button><button type="button" data-metric="efficiency">每瓦效率</button></div><span id="chart-unit" class="chart-unit">TH/s</span></div>
+        <div class="panel-heading"><div><h2 id="trend-title">效能趨勢</h2><span class="panel-caption" id="chart-subtitle">最近 15 分鐘</span></div><div class="segmented" aria-label="趨勢時間"><button type="button" data-range="1">1 分鐘</button><button type="button" data-range="5">5 分鐘</button><button class="selected" type="button" data-range="15" aria-pressed="true">15 分鐘</button></div></div>
+        <div class="chart-toolbar"><div class="chart-tabs" aria-label="趨勢指標"><button class="selected" type="button" data-metric="hashrate" aria-pressed="true">算力</button><button type="button" data-metric="power">耗電</button><button type="button" data-metric="efficiency">每瓦效率</button><button type="button" data-metric="core">核心溫度</button><button type="button" data-metric="hotspot">熱點</button><button type="button" data-metric="memory">顯存</button><button type="button" data-metric="utilization">使用率</button><button type="button" data-metric="core_clock">核心時脈</button><button type="button" data-metric="fan_rpm">風扇 RPM</button></div><span id="chart-unit" class="chart-unit">TH/s</span></div>
         <div class="chart-container"><svg id="chart" viewBox="0 0 760 245" role="img" aria-label="最近 15 分鐘算力趨勢"></svg><div id="chart-empty" class="chart-empty" hidden>正在累積趨勢資料</div></div>
         <div class="chart-footer"><span><i class="legend-dot" id="chart-dot"></i><span id="chart-legend">礦工回報算力</span></span><span id="chart-average">平均 --</span></div>
       </section>
@@ -55,10 +42,34 @@
         <details class="temperature-help"><summary>熱點代表什麼？</summary><p>GPU 晶片內最高溫的感測讀值，並非顯存或能單獨關閉的元件。此礦工無法只停用熱點區域；降低 GPU 負載或改善散熱才能讓它降溫。</p></details>
       </section>
     </div>
+    <details class="panel settings-panel" aria-labelledby="settings-title"><summary class="settings-summary"><span>功耗與排程策略</span><small>點擊展開時段、功耗與風扇設定</small></summary>
+      <div class="panel-heading"><div><h2 id="settings-title">執行策略</h2><span class="panel-caption">保存後沿用至下次變更，重新開機仍保留</span></div><button id="reload-settings" class="icon-button" type="button">重新讀取</button></div>
+      <form id="settings-form">
+        <fieldset id="settings-fields" disabled><legend class="sr-only">調整功耗與風扇</legend><div class="settings-grid">
+          <label for="setting-day_watts">平日日間功耗<div class="setting-input"><input id="setting-day_watts" name="day_watts" type="number" min="150" max="450" step="10" required><span>W</span></div><small>平日自訂時段</small></label>
+          <label for="setting-night_watts">離峰與週末功耗<div class="setting-input"><input id="setting-night_watts" name="night_watts" type="number" min="150" max="450" step="10" required><span>W</span></div><small>其餘時間，150～450W／每次 10W</small></label>
+          <label for="setting-gpu_fan">顯卡兩組風扇<div class="setting-input"><input id="setting-gpu_fan" name="gpu_fan" type="number" min="50" max="100" step="1" required><span>%</span></div><small>兩組同步，50～100%</small></label>
+          <label for="setting-board_fan">主機板三組風扇<div class="setting-input"><input id="setting-board_fan" name="board_fan" type="number" min="30" max="100" step="1" required><span>%</span></div><small>Fan #1、#2、#6 同步，30～100%</small></label>
+        </div>
+        <div class="schedule-editor">
+          <div class="schedule-title"><strong>功耗時段</strong><span>Asia/Taipei · 以台灣時間計算</span></div>
+          <div class="schedule-time-grid">
+            <label>平日開始<input id="setting-weekday_start" name="weekday_start" type="time" required></label>
+            <label>平日結束<input id="setting-weekday_end" name="weekday_end" type="time" required></label>
+            <label>週末開始<input id="setting-weekend_start" name="weekend_start" type="time" required></label>
+            <label>週末結束<input id="setting-weekend_end" name="weekend_end" type="time" required></label>
+          </div>
+          <label class="schedule-switch"><input id="setting-weekend_peak" name="weekend_peak" type="checkbox"><span>週末於指定時段使用平日功耗</span></label>
+          <p>平日設定套用於週一至五；週末未啟用時全天使用離峰功耗。其餘時間自動為離峰。時段目前不得跨午夜。</p>
+        </div></fieldset>
+        <div class="settings-bottom"><p>套用會短暫停挖並重新核對；原本已停挖時保持停止。溫控會限制實際功耗，停止按鈕隨時優先。<br><span>重塗散熱膏後已完成450W短測；實際功耗仍受原廠上限與溫度保護限制。</span></p><button id="apply-settings" class="start-button" type="submit" disabled>套用設定</button></div>
+        <p id="settings-message" class="settings-message" role="status">正在讀取目前設定…</p>
+      </form>
+    </details>
     <section class="panel fan-panel" aria-labelledby="fan-title"><div class="panel-heading"><div><h2 id="fan-title">風扇轉速</h2><span class="panel-caption">顯卡與主機板 · 實際 RPM</span></div><span id="board-age" class="panel-caption">主機板讀值等待中</span></div><div id="fans" class="fans"></div></section>
-    <section class="status-strip" aria-label="運行與資料狀態"><div><span class="status-key">本次運行</span><b id="elapsed">--</b></div><div><span class="status-key">核心時脈</span><b><span id="core-clock">--</span><small> MHz</small></b></div><div><span class="status-key">顯存時脈</span><b><span id="memory-clock">--</span><small> MHz</small></b></div><div><span class="status-key">保護心跳</span><b id="guard">等待資料</b></div><div><span class="status-key">感測資料</span><b id="sensor-age">--</b></div></section>
-    <section class="panel log-panel" aria-labelledby="log-title"><div class="panel-heading"><div><h2 id="log-title">即時 LOG</h2><span class="panel-caption">最近 180 行 · 每 2 秒更新</span></div><label class="log-follow"><input id="log-follow" type="checkbox" checked>跟隨最新</label></div><div class="log-toolbar"><div class="log-tabs"><button type="button" data-log="miner" class="selected" aria-pressed="true">礦工</button><button type="button" data-log="startup" aria-pressed="false">啟動</button><button type="button" data-log="guard" aria-pressed="false">功耗與保護</button><button type="button" data-log="actions" aria-pressed="false">監控操作</button></div><span id="log-updated" class="panel-caption">讀取中</span></div><pre id="log-content" class="log-content" tabindex="0" aria-label="即時紀錄內容">正在讀取紀錄…</pre></section>
-    <footer><span class="footer-mark">◉</span><p>「開始挖礦」會執行原有啟動核對；「停止挖礦」會保留人工停挖，直到再次按開始。「暫停畫面」僅暫停顯示。每瓦效率採算力回報前約 30 秒的 GPU 平均耗電估算，不含整機耗電與收益。<br><span id="source-note">算力依礦工實際回報更新；感測紀錄約每秒更新，主機板風扇約每 15 秒讀取。</span></p><span class="footer-path">C:\test\CORE</span></footer>
+    <section class="status-strip" aria-label="運行與資料狀態"><div><span class="status-key">目前功耗策略</span><b id="profile-mode">等待資料</b></div><div><span class="status-key">本次運行</span><b id="elapsed">--</b></div><div><span class="status-key">核心時脈</span><b><span id="core-clock">--</span><small> MHz</small></b></div><div><span class="status-key">顯存時脈</span><b><span id="memory-clock">--</span><small> MHz</small></b></div><div><span class="status-key">保護心跳</span><b id="guard">等待資料</b></div><div><span class="status-key">感測資料</span><b id="sensor-age">--</b></div></section>
+    <section class="panel log-panel" aria-labelledby="log-title"><div class="panel-heading"><div><h2 id="log-title">即時 LOG</h2><span class="panel-caption">最近 180 行 · 每 2 秒讀取</span></div><label class="log-follow"><input id="log-follow" type="checkbox" checked>跟隨最新</label></div><div class="log-toolbar"><div class="log-tabs"><button type="button" data-log="miner" class="selected" aria-pressed="true">礦工</button><button type="button" data-log="startup" aria-pressed="false">啟動</button><button type="button" data-log="guard" aria-pressed="false">功耗與保護</button><button type="button" data-log="actions" aria-pressed="false">監控操作</button></div><span id="log-updated" class="panel-caption">讀取中</span></div><pre id="log-content" class="log-content" tabindex="0" aria-label="即時紀錄內容">正在讀取紀錄…</pre></section>
+    <footer><span class="footer-mark">◉</span><p>「開始挖礦」會執行原有啟動核對；「停止挖礦」會保留人工停挖，直到再次按開始。「暫停畫面」僅暫停顯示。每瓦效率採算力回報前約 30 秒的 GPU 平均耗電估算，不含整機耗電與收益。<br><span id="source-note">圖表每秒同步 GPU 遙測，算力依礦工回報，主機板風扇約每 15 秒讀取。</span></p><span class="footer-path">C:\test\CORE</span></footer>
   </main>
 </div>
 </body>

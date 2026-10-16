@@ -298,8 +298,10 @@ def main(read_only=False, seconds=10):
         event_writer=None
 
         def apply_power(watts):
+            nonlocal last_change
             previous_power = current
             device.power(watts)
+            last_change = time.monotonic()
             if watts < previous_power:
                 state['前次功耗上限W'] = previous_power
                 state['功耗切換期限UTC'] = (datetime.now(timezone.utc) + timedelta(seconds=2)).isoformat()
@@ -414,7 +416,8 @@ def main(read_only=False, seconds=10):
                     item['設定百分比']==profile[2] and item['模式']=='手動' for item in sample['控制'])
                 memory_policy.update(allowed,ready,data,now)
                 target, next_clock, ceiling, cooling_until, reason = configured_target(
-                    profile,current,ceiling,cooling_until,now,sample,allowed,fans_ready,available)
+                    profile,current,ceiling,cooling_until,now,sample,allowed,fans_ready,available,
+                    last_change_at=last_change)
                 if target != current:
                     apply_power(target)
                     current = target

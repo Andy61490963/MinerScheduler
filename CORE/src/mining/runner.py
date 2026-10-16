@@ -373,7 +373,7 @@ def main():
         live_channel.publish(report)
         save(report)
         live_channel.close()
-        print('離峰停止，入口將等待下一個平日尖峰。' if report['排程停止'] else '礦工已停止，沒有自動重啟。',flush=True)
+        print('離峰停止，入口將等待下一個核准時段。' if report['排程停止'] else '礦工已停止，沒有自動重啟。',flush=True)
     return {'排程停止':report.get('排程停止',False),'原因':report.get('原因','')}
 
 

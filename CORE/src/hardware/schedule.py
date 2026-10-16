@@ -18,12 +18,22 @@ def load_fan_targets():
 
 
 DAY_FAN, NIGHT_FAN, DAY_POWER = load_fan_targets()
+# 設定套用時會先停止負載並重新啟動背景程序，同一執行期使用同一份時段快照。
+TIME_SCHEDULE = json.loads((Path(__file__).resolve().parent / 'TEST_設定.json').read_text(encoding='utf-8-sig'))['功耗排程']
 BASE = 150
 STEP = 10
 SETTLE = 30
-CORE_RAISE = 78
-CORE_BACKOFF = 80
-CORE_STOP = 82
+CORE_RAISE = 70
+CORE_BACKOFF = 75
+CORE_STOP = 82  # 最後一道硬體保護，不可因降瓦而忽略。
+HOTSPOT_BACKOFF = 95
+MEMORY_BACKOFF = 84
+HOTSPOT_STOP = 110
+MEMORY_STOP = 100
+THERMAL_STEP = 40
+THERMAL_INTERVAL = 1
+RECOVERY_INTERVAL = 30
+RECOVERY_HOLD = 180
 CLOCK_STEP = 60
 
 
@@ -73,18 +83,46 @@ def raise_margin(history):
     return bool(history) and all(max(row[index] for row in history) <= ceiling for index, ceiling in ((1,CORE_RAISE),))
 
 
-def daytime(moment=None):
+def time_minutes(value):
+    """只接受 00:00～23:59；跨日區間須拆成兩段，目前不允許。"""
+    if not isinstance(value, str) or len(value) != 5 or value[2] != ':':
+        raise ValueError('排程時間必須為 HH:MM。')
+    hour, minute = value[:2], value[3:]
+    if not hour.isascii() or not minute.isascii() or not hour.isdigit() or not minute.isdigit():
+        raise ValueError('排程時間必須為 HH:MM。')
+    if int(hour) > 23 or int(minute) > 59:
+        raise ValueError('排程時間超出允許範圍。')
+    return int(hour) * 60 + int(minute)
+
+
+def daytime(moment=None, schedule=None):
+    """平日、週末可分別指定使用日間功耗的時窗，其餘都套用離峰功耗。"""
     moment = (moment or datetime.now(timezone.utc)).astimezone(TAIPEI)
+    schedule = TIME_SCHEDULE if schedule is None else schedule
+    if moment.weekday() < 5:
+        start = schedule.get('平日時段開始', '09:15')
+        end = schedule.get('平日時段結束', '17:45')
+    else:
+        enabled = schedule.get('週末使用平日功耗', False)
+        if type(enabled) is not bool:
+            raise ValueError('週末時段開關必須是布林值。')
+        if not enabled:
+            return False
+        start = schedule.get('週末時段開始', '09:15')
+        end = schedule.get('週末時段結束', '17:45')
+    begin, finish = time_minutes(start), time_minutes(end)
+    if begin >= finish:
+        raise ValueError('同一天的排程結束時間必須晚於開始時間。')
     minutes = moment.hour * 60 + moment.minute
-    return moment.weekday() < 5 and 555 <= minutes < 1065
+    return begin <= minutes < finish
 
 
 def mining_allowed(schedule, moment=None):
-    """離峰停挖時，只允許台灣時間平日尖峰建立或繼續挖礦工作。"""
+    """停用離峰挖礦時只允許已設定的日間功耗時段提供工作。"""
     offpeak = schedule.get('離峰挖礦', True)
     if type(offpeak) is not bool:
         raise ValueError('離峰挖礦設定必須為布林值。')
-    return offpeak or daytime(moment)
+    return offpeak or daytime(moment, schedule)
 
 
 def fan_check(sample):
@@ -102,6 +140,8 @@ def fan_check(sample):
             raise RuntimeError('溫度感測器無有效讀值，停止負載。')
     if sample['核心C'] >= CORE_STOP:
         raise RuntimeError('接近溫度停止門檻，停止負載並保留現有風扇控制。')
+    if sample['熱點C'] >= HOTSPOT_STOP or sample['顯存C'] >= MEMORY_STOP:
+        raise RuntimeError('熱點或顯存已超過緊急溫度門檻，停止負載並保留散熱。')
 
 
 def decide(active, ready, current, ceiling, sample, seconds, stable, utilization):
@@ -117,22 +157,42 @@ def decide(active, ready, current, ceiling, sample, seconds, stable, utilization
 
 
 def configured_target(profile, current, ceiling, cooling_until, now, sample,
-                      allowed, fans_ready, load_available=True):
-    """正常啟動直接採用保存的時段設定；停止、風扇及溫度保護優先。"""
+                      allowed, fans_ready, load_available=True, last_change_at=None):
+    """優先降瓦並保持挖礦；超過 CORE_STOP 或感測失效仍由 fan_check 強制停止。"""
     fan_check(sample)
     if not allowed or not fans_ready or not load_available:
         return BASE, 900, ceiling, cooling_until, '時段禁止、風扇未就緒或負載已停止，維持保護待機。'
-    if sample['核心C'] >= CORE_BACKOFF or sample['熱點C'] >= 105 or sample['顯存C'] >= 90:
-        ceiling = min(ceiling, max(BASE, current - 20))
-        cooling_until = now + 60
-        reason = '核心80°C或熱點105°C／顯存90°C，降低功耗並保留較低上限。'
-    elif now >= cooling_until:
-        reason = '依照保存的本時段功耗啟動與運行，持續負載核對不限制起始功耗。'
+
+    too_hot = (sample['核心C'] >= CORE_BACKOFF
+               or sample['熱點C'] >= HOTSPOT_BACKOFF
+               or sample['顯存C'] >= MEMORY_BACKOFF)
+    changed_ago = float('inf') if last_change_at is None else now - last_change_at
+
+    if too_hot:
+        cooling_until = max(cooling_until, now + RECOVERY_HOLD)
+        if current > BASE and changed_ago >= THERMAL_INTERVAL:
+            # 一次降 40W，限制寫入頻率；避免每個 100ms 迴圈都重設 NVML 功耗。
+            target = max(BASE, current - THERMAL_STEP)
+            ceiling = min(ceiling, target)
+            reason = '溫度接近限制，分級降低40W且繼續挖礦；必要時仍執行停機保護。'
+        else:
+            target = min(current, ceiling, profile[0])
+            reason = '溫度偏高，維持目前降瓦設定並監控下一筆感測資料。'
     else:
-        reason = '過熱後冷卻等待，暫不提高功耗。'
-    target = min(ceiling, profile[0])
-    if now < cooling_until:
-        target = min(target, current)
+        recovered = (now >= cooling_until and changed_ago >= RECOVERY_INTERVAL
+                     and sample['核心C'] <= CORE_RAISE and sample['熱點C'] <= 90
+                     and sample['顯存C'] <= 78)
+        if recovered and ceiling < profile[0]:
+            ceiling = min(profile[0], ceiling + STEP)
+            reason = '溫度持續回穩，緩慢恢復10W。'
+        elif now < cooling_until:
+            reason = '降瓦冷卻觀察中，暫不提高功耗。'
+        else:
+            reason = '依保存時段功耗維持挖礦與溫度監控。'
+        target = min(ceiling, profile[0])
+        if now < cooling_until:
+            target = min(target, current)
+
     return target, profile[1] if target > BASE else 900, ceiling, cooling_until, reason
 
 

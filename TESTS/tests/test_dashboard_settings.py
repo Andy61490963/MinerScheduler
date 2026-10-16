@@ -42,14 +42,15 @@ class SettingsTests(unittest.TestCase):
     def test_ranges_are_strict_and_no_arbitrary_fields(self):
         for changes in ({'day_watts':460},{'night_watts':500},{'day_watts':181},{'gpu_fan':49},
                         {'board_fan':29},{'gpu_fan':101},{'day_watts':True},{'board_fan':float('nan')},
-                        {'gpu_fan':'100'},{'command':'任意命令'}):
+                        {'gpu_fan':'100'},{'weekday_start':'25:00'},{'weekday_end':'09:15'},
+                        {'weekend_peak':'true'},{'weekend_start':'24:00'},{'command':'任意命令'}):
             with self.subTest(changes=changes),self.assertRaises(ValueError):
                 settings.prepare(self.payload(**changes))
         self.assertFalse(settings.prepare(self.payload(day_watts=200,gpu_fan=100))['unchanged'])
 
     def test_public_values_have_no_wallet_or_pool(self):
         result=settings.public_settings()
-        self.assertEqual(set(result['values']),set(settings.FIELDS))
+        self.assertEqual(set(result['values']),set(settings.FIELDS) | set(settings.TIME_FIELDS) | {'weekend_peak'})
         self.assertNotIn('收款地址',json.dumps(result,ensure_ascii=False))
 
     def test_unchanged_is_a_noop(self):
@@ -72,7 +73,7 @@ class SettingsTests(unittest.TestCase):
         for key in original:
             if key not in ('功耗排程','運作模式'):self.assertEqual(result[key],original[key])
         self.assertEqual(result['功耗排程']['核心停止溫度C'],82)
-        self.assertEqual(result['功耗排程']['核心降瓦溫度C'],80)
+        self.assertEqual(result['功耗排程']['核心降瓦溫度C'],75)
         for name in settings.FILES[1:]:
             old=json.loads(ORIGINAL[name])['FanControl']['Controls']
             new=plan['documents'][name]['FanControl']['Controls']
@@ -81,6 +82,18 @@ class SettingsTests(unittest.TestCase):
                 if identifier in settings.GPU_IDS:self.assertEqual(after['ManualControlValue'],90)
                 elif identifier in settings.BOARD_IDS:self.assertEqual(after['ManualControlValue'],60)
                 else:self.assertEqual(before,after)
+
+    def test_custom_weekday_and_weekend_times_persist(self):
+        requested = self.payload(weekday_start='07:00', weekday_end='19:00',
+                                 weekend_peak=True, weekend_start='10:00',
+                                 weekend_end='14:00')
+        plan = settings.prepare(requested)
+        self.assertFalse(plan['unchanged'])
+        settings.write_plan(plan)
+        saved = settings.public_settings()['values']
+        for key in ('weekday_start', 'weekday_end', 'weekend_peak',
+                    'weekend_start', 'weekend_end'):
+            self.assertEqual(saved[key], requested[key])
 
     def test_backup_is_complete_and_failed_write_rolls_back(self):
         plan=settings.prepare(self.payload(day_watts=200))

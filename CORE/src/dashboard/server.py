@@ -159,9 +159,15 @@ def verified_miner(pid):
 
 
 def telemetry(values, timestamp):
+    """沿用取得的 GPU 讀值，不額外查詢驅動。"""
+    fans = values.get("風扇") or []
+    rpms = [number(fan.get("RPM")) for fan in fans if isinstance(fan, dict)]
+    rpms = [rpm for rpm in rpms if rpm is not None and rpm >= 0]
     return {"t": timestamp, "power": number(values.get("功耗W")),
             "core": number(values.get("核心C")), "hotspot": number(values.get("熱點C")),
-            "memory": number(values.get("顯存C"))}
+            "memory": number(values.get("顯存C")), "utilization": number(values.get("使用率")),
+            "core_clock": number(values.get("核心時脈MHz")),
+            "fan_rpm": sum(rpms) / len(rpms) if len(rpms) == 2 else None}
 
 
 def aligned_efficiency(report, samples):
@@ -306,6 +312,8 @@ class Monitor:
             "identity": IDENTITY, "server_time": now, "state": state,
             "action":ACTIONS.snapshot(),"action_token":ACTION_TOKEN,"reason":status.get('原因',''),
             "manual_stop": manual_stop,
+            "active_profile": "平日功耗設定" if guard.get('平日提高功耗時段') else "離峰功耗設定",
+            "guard_reason": guard.get('原因', ''),
             "message": "人工停挖中" if manual_stop and state == "stopped" else status.get("狀態") or "尚無挖礦狀態紀錄", "warnings": warnings,
             "session_start": start, "elapsed": max(0, now - start) if running else number(status.get("經過秒數")), "miner_pid": status.get("礦工PID"),
             "process_alive": live, "status_time": timestamp, "status_age": status_age,
@@ -341,7 +349,7 @@ class Monitor:
                                      "hash_valid": False, "hashrate": None, "efficiency": None,
                                      "one_minute": None, "fifteen_minutes": None, "guard_ok": False,
                                      "warnings": ["資料收集暫時失敗，等待下一次更新"]}
-            self.stop.wait(max(.1, 2 - (time.monotonic() - began)))
+            self.stop.wait(max(.1, 1 - (time.monotonic() - began)))
 
     def board_loop(self):
         executable = shutil.which("pwsh") or str(Path(os.environ.get("SystemRoot", "C:/Windows")) / "System32/WindowsPowerShell/v1.0/powershell.exe")

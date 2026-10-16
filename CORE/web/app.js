@@ -26,7 +26,13 @@ let logRequest=0;
 const metrics = {
   hashrate: {label: "算力", unit: "TH/s", color: "#6ccdeb", legend: "礦工回報算力", digits: 2},
   power: {label: "耗電", unit: "W", color: "#f5c36a", legend: "GPU 實際耗電", digits: 1},
-  efficiency: {label: "每瓦效率", unit: "TH/s/W", color: "#64e6bb", legend: "回報區間效率估算", digits: 3}
+  efficiency: {label: "每瓦效率", unit: "TH/s/W", color: "#64e6bb", legend: "回報區間效率估算", digits: 3},
+  core: {label: "核心溫度", unit: "°C", color: "#d9b47d", legend: "GPU 核心溫度", digits: 1},
+  hotspot: {label: "熱點溫度", unit: "°C", color: "#d78f8f", legend: "GPU 晶片熱點", digits: 1},
+  memory: {label: "顯存溫度", unit: "°C", color: "#a59dd9", legend: "GPU 顯存溫度", digits: 1},
+  utilization: {label: "GPU 使用率", unit: "%", color: "#79b6d5", legend: "GPU 使用率", digits: 0},
+  core_clock: {label: "核心時脈", unit: "MHz", color: "#b4c8dd", legend: "GPU 核心時脈", digits: 0},
+  fan_rpm: {label: "風扇轉速", unit: "RPM", color: "#80b7ac", legend: "兩組風扇平均轉速", digits: 0}
 };
 
 function setBadge(state, text) {
@@ -119,6 +125,7 @@ function render(data) {
   put("elapsed", duration(data.elapsed));
   put("core-clock", format(data.sensor_fresh ? data.core_clock : null, 0));
   put("memory-clock", format(data.sensor_fresh ? data.memory_clock : null, 0));
+  put("profile-mode", data.active_profile || "等待資料");
   put("guard", data.guard_ok ? `正常 · ${ageText(data.guard_age)}` : `待確認 · ${ageText(data.guard_age)}`);
   $("guard").className = data.guard_ok ? "good" : "warning";
   put("sensor-age", `${ageText(data.sensor_age ?? data.status_age)} · ${timeText(data.sensor_time ?? data.status_time)}`);
@@ -138,7 +145,7 @@ function renderAction(data) {
   button.textContent=stopping ? "▶ 開始／恢復挖礦" : action.phase==="settings" && action.busy ? "◌ 套用設定中…" : startRequestPending || action.busy ? "◌ 啟動核對中…" : healthy ? "✓ 挖礦運行中" : "▶ 開始／恢復挖礦";
   stopButton.disabled=stopping || (!action.busy && manuallyStopped) || !data.action_token || disconnected;
   stopButton.textContent=stopping ? "◌ 停止中…" : manuallyStopped ? "■ 已人工停止" : "■ 停止挖礦";
-  const message=action.message || (data.state!=="running" && data.reason ? `上次停止原因：${data.reason}` : "");
+  const message = (!action.busy && data.state === "stopped" && !data.manual_stop && data.reason) ? `停止原因：${data.reason}` : (action.message || "");
   $("action-status").hidden=!message;
   $("action-status").textContent=message;
   $("action-status").className="action-status"+(action.phase==="error" ? " error" : "");
@@ -163,7 +170,7 @@ function drawChart() {
   if (!snapshot) return;
   const end = snapshot.server_time;
   const begin = end - range * 60;
-  const source = metric === "power" ? (snapshot.history || []) : (snapshot.hash_history || []);
+  const source = (metric === "hashrate" || metric === "efficiency") ? (snapshot.hash_history || []) : (snapshot.history || []);
   const points = source.filter(p => p.t >= begin && p.t <= end).map(p => ({t: p.t, value: p[metric]}));
   const valid = points.filter(p => finite(p.value));
   chartPoints = valid;
@@ -202,7 +209,7 @@ function drawChart() {
   svg.append(defs);
   let segment = [];
   const segments = [];
-  const maxGap = metric === "power" ? 10 : 180;
+  const maxGap = ["hashrate", "efficiency"].includes(metric) ? 180 : 10;
   for (const point of points) {
     if (!finite(point.value)) {
       if (segment.length) segments.push(segment);
@@ -329,7 +336,7 @@ async function poll() {
     }
   } finally {
     pollPending=false;
-    if (!paused) timer = setTimeout(poll, 2000);
+    if (!paused) timer = setTimeout(poll, 1000);
   }
 }
 
@@ -414,8 +421,11 @@ async function loadSettings(){
     settingsData=data;
     for (const [key,value] of Object.entries(data.values)) {
       const input=$(`setting-${key}`);
-      input.value=value;
-      for (const name of ['min','max','step']) input[name]=data.limits[key][name];
+      if (input.type === "checkbox") input.checked = value === true;
+      else input.value = value;
+      if (data.limits[key]) {
+        for (const name of ['min','max','step']) input[name] = data.limits[key][name];
+      }
     }
     $("settings-message").className="settings-message";
     $("settings-message").textContent='已讀取保存設定；上方即時讀值顯示實際功耗與轉速。';
@@ -432,7 +442,12 @@ $("settings-form").addEventListener('submit',async event=>{
   event.preventDefault();
   if (!settingsData || settingsPending || !snapshot?.action_token || !$("settings-form").reportValidity()) return;
   const payload={revision:settingsData.revision};
-  for (const key of Object.keys(settingsData.values)) payload[key]=Number($(`setting-${key}`).value);
+  for (const key of Object.keys(settingsData.values)) {
+    const control = $(`setting-${key}`);
+    if (control.type === "checkbox") payload[key] = control.checked;
+    else if (control.type === "time") payload[key] = control.value;
+    else payload[key] = Number(control.value);
+  }
   settingsPending=true;
   renderSettingsState(snapshot);
   try {

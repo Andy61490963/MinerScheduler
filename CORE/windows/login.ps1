@@ -22,8 +22,26 @@ try {
     if ($taskExisting.Count -eq 0 -and -not (Test-Path -LiteralPath (Join-Path $taskRoot 'TEST_停止.flag'))) {
         # 初次載入風扇程式可能較慢；在啟動負載與監測程序之前先等候硬體就緒。
         $taskTime=[TimeZoneInfo]::ConvertTimeBySystemTimeZoneId([DateTimeOffset]::UtcNow,'Taipei Standard Time')
-        $taskMinutes=$taskTime.Hour*60+$taskTime.Minute
-        $taskDay=$taskTime.DayOfWeek -notin @([DayOfWeek]::Saturday,[DayOfWeek]::Sunday) -and $taskMinutes -ge 555 -and $taskMinutes -lt 1065
+        $taskConfig=Get-Content -LiteralPath (Join-Path $taskRoot 'TEST_設定.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+        $taskSchedule=$taskConfig.功耗排程
+        $taskWeekday=$taskTime.DayOfWeek -notin @([DayOfWeek]::Saturday,[DayOfWeek]::Sunday)
+        $taskDay=$false
+        $taskStart=$null
+        $taskEnd=$null
+        if ($taskWeekday) {
+            $taskStart=if ($taskSchedule.平日時段開始) { $taskSchedule.平日時段開始 } else { '09:15' }
+            $taskEnd=if ($taskSchedule.平日時段結束) { $taskSchedule.平日時段結束 } else { '17:45' }
+        } elseif ($taskSchedule.週末使用平日功耗 -eq $true) {
+            $taskStart=if ($taskSchedule.週末時段開始) { $taskSchedule.週末時段開始 } else { '09:15' }
+            $taskEnd=if ($taskSchedule.週末時段結束) { $taskSchedule.週末時段結束 } else { '17:45' }
+        }
+        if ($taskStart -and $taskEnd) {
+            $taskNow=[TimeSpan]::FromHours($taskTime.Hour)+[TimeSpan]::FromMinutes($taskTime.Minute)
+            $taskBegin=[TimeSpan]::ParseExact($taskStart,'hh\:mm',[Globalization.CultureInfo]::InvariantCulture)
+            $taskFinish=[TimeSpan]::ParseExact($taskEnd,'hh\:mm',[Globalization.CultureInfo]::InvariantCulture)
+            if ($taskBegin -ge $taskFinish) { throw '儲存的時段起迄無效，取消自動啟動。' }
+            $taskDay=($taskNow -ge $taskBegin -and $taskNow -lt $taskFinish)
+        }
         $taskProfile=if($taskDay){'TEST_尖峰風扇70.json'}else{'TEST_離峰風扇100.json'}
         $taskFan=Join-Path $taskRoot 'TEST_風扇\FanControl.exe'
         $taskFanConfig=Join-Path $taskRoot ('TEST_風扇\Configurations\'+$taskProfile)

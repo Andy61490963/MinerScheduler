@@ -56,9 +56,9 @@ class ConfiguredStartupTests(unittest.TestCase):
                 original=self.sample[name]
                 self.sample[name]=value
                 target,clock,ceiling,until,_=self.target(current=350)
-                self.assertEqual((target,ceiling,until),(330,330,61))
+                self.assertEqual((target,ceiling,until),(310,310,181))
                 self.sample[name]=original
-                self.assertEqual(self.target(current=330,ceiling=ceiling,cooling=until,now=100)[0],330)
+                self.assertEqual(self.target(current=310,ceiling=ceiling,cooling=until,now=100)[0],310)
 
     def test_sensor_failure_and_core_stop_are_not_bypassed(self):
         for value in (None,float('nan'),82):
