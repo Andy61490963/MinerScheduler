@@ -1,0 +1,36 @@
+# 本機環境與憑證
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+*.local.json
+.venv/
+venv/
+
+# 執行紀錄、即時狀態及建置輸出
+__pycache__/
+*.py[cod]
+*.log
+*.jsonl
+*.tmp
+*.dat
+*.flag
+TESTS/results/
+TESTS/測試結果.json
+build/
+dist/
+建置/
+備份/
+
+# 第三方執行檔及執行環境由原部署另行準備
+*.exe
+*.dll
+*.pyd
+*.zip
+TEST_Core/
+TEST_環境/
+TEST_風扇/
+TEST_Status.json
+TEST_功耗狀態.json
+TEST_啟動核對結果.json

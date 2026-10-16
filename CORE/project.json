@@ -1,0 +1,695 @@
+{
+  "schema": 1,
+  "name": "正式挖礦與監控專案",
+  "runtime_root": "C:\\test\\CORE",
+  "snapshot_utc": "2026-10-16T07:08:03.289009+00:00",
+  "說明": "公開原始碼及範例設定；個人收款地址與顯卡識別碼已使用佔位值，第三方依賴只列出雜湊。",
+  "files": [
+    {
+      "source": "src/mining/entry.py",
+      "target": "TEST_入口.py",
+      "origin_sha256": "6791703f65e67f7731aa73c1c0993b1fff08735f2b2a2e577222d11896d223ec",
+      "vendor": false
+    },
+    {
+      "source": "src/mining/runner.py",
+      "target": "TEST_Run.py",
+      "origin_sha256": "12ae3f94595d4efd9c5037978ebbc404e2dab38fe44cae561477821eddc1c874",
+      "vendor": false
+    },
+    {
+      "source": "src/mining/process.py",
+      "target": "TEST_執行工具.py",
+      "origin_sha256": "f9835b73591b10d20216bbf4cf19d54e5541be23bc04f02e422710df80b7a80c",
+      "vendor": false
+    },
+    {
+      "source": "src/safety/preflight.py",
+      "target": "TEST_啟動核對.py",
+      "origin_sha256": "be8f22f3a5c2033ce4134bbf8d8ec1c4bd2c596de258c925ee5579b27a971ad4",
+      "vendor": false
+    },
+    {
+      "source": "src/safety/power_guard.py",
+      "target": "TEST_功耗排程.py",
+      "origin_sha256": "e7c0a690cd4700b123fc99df3dce77c48a669ce0696db0f30415cd6cd5ae11f9",
+      "vendor": false
+    },
+    {
+      "source": "src/safety/channels.py",
+      "target": "TEST_即時通道.py",
+      "origin_sha256": "00fe36e1a3f15625a954784e71a54989aadfff1e1bc48d232e35c7468bf3aa79",
+      "vendor": false
+    },
+    {
+      "source": "src/hardware/schedule.py",
+      "target": "TEST_排程規則.py",
+      "origin_sha256": "0957b3d2355454fb123ae259a8ec948d6b401595defeff51f69b9f371b1a1f73",
+      "vendor": false
+    },
+    {
+      "source": "src/hardware/gpu_reader.py",
+      "target": "TEST_顯卡讀值.py",
+      "origin_sha256": "8c45bd82a88788c1dcb777db1528cb07fc9025c912bdebef9654efadafb10bec",
+      "vendor": false
+    },
+    {
+      "source": "src/hardware/fan_schedule.py",
+      "target": "TEST_風扇排程.py",
+      "origin_sha256": "ddf89f558bfb84cae3f6585a8c03e44daa2e8560a4d95af270b9a8cbb757b0e1",
+      "vendor": false
+    },
+    {
+      "source": "src/hardware/fan_monitor.py",
+      "target": "TEST_風扇監測.py",
+      "origin_sha256": "c4cc7b5528fcbfa7535fd0c883264ded5eb1ee247d53cc75019b7b28fd353ead",
+      "vendor": false
+    },
+    {
+      "source": "src/hardware/memory_policy.py",
+      "target": "TEST_顯存節能.py",
+      "origin_sha256": "c564cc9dc1b41c35ea1169d1e98f18ebe48018bc7f194cf7e72a4956f46b3b07",
+      "vendor": false
+    },
+    {
+      "source": "src/coordination/local_model.py",
+      "target": "TEST_AI協調.py",
+      "origin_sha256": "f480b0559b916dae2fd92147f29e189afc9328551c9cc539749b704391459431",
+      "vendor": false
+    },
+    {
+      "source": "src/dashboard/server.py",
+      "target": "TEST_效率監控/server.py",
+      "origin_sha256": "4497c67b765f25a8d84e7db6b175ae3a9c62814179bea79b8fff11850f1ca141",
+      "vendor": false
+    },
+    {
+      "source": "src/dashboard/actions.py",
+      "target": "TEST_效率監控/actions.py",
+      "origin_sha256": "85608910c4c0e7c96b8365004da728dbd1c545e95895e4aeaeeabd3599e85129",
+      "vendor": false
+    },
+    {
+      "source": "src/dashboard/settings.py",
+      "target": "TEST_效率監控/settings.py",
+      "origin_sha256": "03d6a754e7b179d1af3d5ffdf982905bcc43f0764e67a56979830c6a270abd6a",
+      "vendor": false
+    },
+    {
+      "source": "web/index.html",
+      "target": "TEST_效率監控/index.html",
+      "origin_sha256": "a08f52ded2d1af576c828ceecf4a904540e5db342e97c55d88140877b47d96a0",
+      "vendor": false
+    },
+    {
+      "source": "web/app.js",
+      "target": "TEST_效率監控/app.js",
+      "origin_sha256": "faa52282e89daa8c0c57c6b77db139a3b6e74ce35de309804d79468be87eeb30",
+      "vendor": false
+    },
+    {
+      "source": "web/style.css",
+      "target": "TEST_效率監控/style.css",
+      "origin_sha256": "1e306a70fe7d73f494ccf1717fc5fa3c2fba07d177444498dd32453cdaee0285",
+      "vendor": false
+    },
+    {
+      "source": "windows/start.ps1",
+      "target": "TEST_啟動.ps1",
+      "origin_sha256": "753060be346fd3b1a119409eca4cb7766aba4c96142b4f49fc2271fd75fea746",
+      "vendor": false
+    },
+    {
+      "source": "windows/start_fans.ps1",
+      "target": "TEST_啟動風扇排程.ps1",
+      "origin_sha256": "acfb30fed5f53f332765beb1cd3ed01161e32a7e44746fc6b45c23f1635bd6d8",
+      "vendor": false
+    },
+    {
+      "source": "windows/sync_schedule.ps1",
+      "target": "TEST_同步排程時間.ps1",
+      "origin_sha256": "cbfebd8fa412eaa487a956be46ac5092872dcdcaa7dbd560de29b6898b86cbb3",
+      "vendor": false
+    },
+    {
+      "source": "windows/power_guard.ps1",
+      "target": "TEST_功耗保護.ps1",
+      "origin_sha256": "ec803e1299e892008d5151bccb64436d7f92dbc7bdd0a2182940dd1bde2618a9",
+      "vendor": false
+    },
+    {
+      "source": "windows/install_schedule.ps1",
+      "target": "TEST_安裝排程.ps1",
+      "origin_sha256": "10b0208e133be62e1222db00f732e91af01250971e338cd17527dfab62df165e",
+      "vendor": false
+    },
+    {
+      "source": "windows/allow_miner.ps1",
+      "target": "TEST_允許礦工.ps1",
+      "origin_sha256": "8f52b2653ad4b06d1831feda6b22d4d963e64c19c63039e4d675d1deececabaf",
+      "vendor": false
+    },
+    {
+      "source": "windows/board_fans.ps1",
+      "target": "TEST_效率監控/board_fans.ps1",
+      "origin_sha256": "2bb2bb94a2a145906c3ed485a4d75c3e6c14f786c1a7bea8f3dd7435c3d3ea71",
+      "vendor": false
+    },
+    {
+      "source": "windows/settings_workers.ps1",
+      "target": "TEST_效率監控/設定背景.ps1",
+      "origin_sha256": "9bca3468ef2dd6ce4dcf42076b1a81c79f55512adbf11472e71377031e1a44d9",
+      "vendor": false
+    },
+    {
+      "source": "windows/open_monitor.ps1",
+      "target": "TEST_效率監控/開啟監控.ps1",
+      "origin_sha256": "a858eb72dea419893c9c727d948a6bedfa4bf6a8b6d472e2005cef687c719338",
+      "vendor": false
+    },
+    {
+      "source": "windows/start.cmd",
+      "target": "TEST_開始.cmd",
+      "origin_sha256": "8f4551a94395127568beae5a6a161b3063454227d8308caa5571f8b2c2aa1af3",
+      "vendor": false
+    },
+    {
+      "source": "windows/stop.cmd",
+      "target": "TEST_停止.cmd",
+      "origin_sha256": "7800a03b3a9ad1a81f40c17b7367aedec5897190457e7633735ad8fc460182b1",
+      "vendor": false
+    },
+    {
+      "source": "windows/open_monitor.cmd",
+      "target": "TEST_開啟效率監控.cmd",
+      "origin_sha256": "42baa759231e1359caf949d79289cbaa2f1605b33c15b96e0c993680dd0b1d2d",
+      "vendor": false
+    },
+    {
+      "source": "config/mining.json",
+      "target": "TEST_設定.json",
+      "origin_sha256": "0dd1bb19882f2176c7c27349b4369e988d88ca97a50bcd43758a920b6a98715b",
+      "vendor": false
+    },
+    {
+      "source": "config/fans/weekday.json",
+      "target": "TEST_風扇/Configurations/TEST_尖峰風扇70.json",
+      "origin_sha256": "2f3770aab0ce73ba835ed62c066bee6b5a8c0ea59a04350b6cd9036903d01071",
+      "vendor": false
+    },
+    {
+      "source": "config/fans/offpeak.json",
+      "target": "TEST_風扇/Configurations/TEST_離峰風扇100.json",
+      "origin_sha256": "2f3770aab0ce73ba835ed62c066bee6b5a8c0ea59a04350b6cd9036903d01071",
+      "vendor": false
+    },
+    {
+      "source": "config/fans/default.json",
+      "target": "TEST_風扇/Configurations/userConfig.json",
+      "origin_sha256": "a533d68f360ee28ec274da8614b132f30f19548b0dcb1cd9d8f5366f330490c2",
+      "vendor": false
+    },
+    {
+      "source": "docs/操作說明.txt",
+      "target": "TEST_效率監控/使用說明.txt",
+      "origin_sha256": "1bff5923228f88dbc9ced5c02d47414470f385dbcb300ffe10f65e695012c3ae",
+      "vendor": false
+    },
+    {
+      "source": "windows/login.ps1",
+      "target": "TEST_登入啟動.ps1",
+      "origin_sha256": "0f534bcea04d34adac0bb4e96a4d360ebc10ad35465d96fcc0929bde28eb408f",
+      "vendor": false
+    }
+  ],
+  "dependencies": [
+    {
+      "target": "TEST_環境/_asyncio.pyd",
+      "sha256": "c77de90cad749087a0c5dc5e19d78d24f6ef44e7e5ac19b8420cfc0cea62395d"
+    },
+    {
+      "target": "TEST_環境/_bz2.pyd",
+      "sha256": "65f610646d10d5babea080e060d244b546ec52c54012e5e937dc72dcc2e2e7bc"
+    },
+    {
+      "target": "TEST_環境/_ctypes.pyd",
+      "sha256": "0e56107a891100535f2da79d85a5ae65ff1227b4765bd108f8593ac1a1110d81"
+    },
+    {
+      "target": "TEST_環境/_decimal.pyd",
+      "sha256": "aeacfead2befcc0768063a037bb64bd32109ae09cb144e5f571b04dd7965db9d"
+    },
+    {
+      "target": "TEST_環境/_elementtree.pyd",
+      "sha256": "5009a9a53c03ef8387443b5cf6ce08e5c3a79727466a0b931c5bbca915bf89ca"
+    },
+    {
+      "target": "TEST_環境/_hashlib.pyd",
+      "sha256": "03d233dbace599168eaffec823de6ed7beec8c2a4ebfe9b8a3d8e042a59af3ba"
+    },
+    {
+      "target": "TEST_環境/_lzma.pyd",
+      "sha256": "e3deecc1f59a3b811c608861decd84de1e8df8bafd5e2b39188861318c5a38cf"
+    },
+    {
+      "target": "TEST_環境/_msi.pyd",
+      "sha256": "b49332bae154ebdd8c3d5e7ddfdde336d9c47f91ba028dc67bafb2420b3dbb5c"
+    },
+    {
+      "target": "TEST_環境/_multiprocessing.pyd",
+      "sha256": "2c636df7059cb0dd7e978dd735c7c5c8ddb09cf94754cf9e232296b96c5c545a"
+    },
+    {
+      "target": "TEST_環境/_overlapped.pyd",
+      "sha256": "662126ff80c3a1b4cedf74074029c12ae4743e6d3b37376e39ac70aacb7d4d3c"
+    },
+    {
+      "target": "TEST_環境/_queue.pyd",
+      "sha256": "48e76e0ad63f6932b4a77b5819f41c1e7595636ca8d9e824f0943a14b8bb5035"
+    },
+    {
+      "target": "TEST_環境/_socket.pyd",
+      "sha256": "3efa4636cf9e350856f6927d67a4c2564bf9bd2758a00bbf17d3aece5b60016d"
+    },
+    {
+      "target": "TEST_環境/_sqlite3.pyd",
+      "sha256": "64b51df2805c58b023a875e8ae3be7ac7f61ef664f32ca6c90f6315da47ef0bc"
+    },
+    {
+      "target": "TEST_環境/_ssl.pyd",
+      "sha256": "0bc527d2dbc50009f43b2ed5d5982c4f63f4b647647ffa9eda612dcda80f6040"
+    },
+    {
+      "target": "TEST_環境/_uuid.pyd",
+      "sha256": "acce4f281d7ffb2dec0997527faf25b1df62ad7bd3032c568ddcf65c90edc867"
+    },
+    {
+      "target": "TEST_環境/_wmi.pyd",
+      "sha256": "a980f1e7a29842bd946863fc2693fbeb555a9dc0f9e1630dfed9a2fcdef3ece2"
+    },
+    {
+      "target": "TEST_環境/_zoneinfo.pyd",
+      "sha256": "76f1439cda82ab6976df6ba505c4079444703f6d44d8b0259ce59c0ff4279fb4"
+    },
+    {
+      "target": "TEST_環境/libcrypto-3.dll",
+      "sha256": "ccfffddcd3defb8d899026298af9af43bc186130f8483d77e97c93233d5f27d7"
+    },
+    {
+      "target": "TEST_環境/libffi-8.dll",
+      "sha256": "eff52743773eb550fcc6ce3efc37c85724502233b6b002a35496d828bd7b280a"
+    },
+    {
+      "target": "TEST_環境/libssl-3.dll",
+      "sha256": "007142039f04d04e0ed607bda53de095e5bc6a8a10d26ecedde94ea7d2d7eefe"
+    },
+    {
+      "target": "TEST_環境/LICENSE.txt",
+      "sha256": "e502c6b880ff58d614901495a9009c136539cd0b1e2a2abb8fc00b934c203419"
+    },
+    {
+      "target": "TEST_環境/pyexpat.pyd",
+      "sha256": "d615e193d1affcdbfe504e90d3621cbdcff94bf72b79d899126534507fd6d27a"
+    },
+    {
+      "target": "TEST_環境/python.cat",
+      "sha256": "5d85439736ae088d9680b391e2bca55ca7e9cc5b41a12ebe8e2f554506c7e72e"
+    },
+    {
+      "target": "TEST_環境/python.exe",
+      "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+    },
+    {
+      "target": "TEST_環境/python3.dll",
+      "sha256": "fb975a606e7fbf74f64260e3f60c3490b4f74a183c0926fd6ed1ac4c52ac7b1c"
+    },
+    {
+      "target": "TEST_環境/python312._pth",
+      "sha256": "2820f241bc9d6810d4db21c21cca3845799367fbdf0199620fb37c86a74b945c"
+    },
+    {
+      "target": "TEST_環境/python312.dll",
+      "sha256": "9a0e3435aaa680d868150f87ab3e388ad2eebc22f87e036155c7b4eda8cd2120"
+    },
+    {
+      "target": "TEST_環境/python312.zip",
+      "sha256": "fb131c0ef7e35cc5250a74c8cd18744bf4115fb8163710711f3758d7df3d1f88"
+    },
+    {
+      "target": "TEST_環境/pythonw.exe",
+      "sha256": "d72294fb338bc2fc8896d25a7395a4db466425427e1559e77185d5135a830681"
+    },
+    {
+      "target": "TEST_環境/select.pyd",
+      "sha256": "d4d7181b11db0bd22a6cd5cda6f8583d1f5c77615fd0a6ca33350619d6e0438a"
+    },
+    {
+      "target": "TEST_環境/sqlite3.dll",
+      "sha256": "8daa45684bf6688fca28d956b2e8942f2fa98f656675ce68e6d61dd869848a7a"
+    },
+    {
+      "target": "TEST_環境/unicodedata.pyd",
+      "sha256": "208ee1cd3cbad0828433ca7246b05be2b1ff5569983d27d296c0b38888585488"
+    },
+    {
+      "target": "TEST_環境/vcruntime140.dll",
+      "sha256": "052ad6a20d375957e82aa6a3c441ea548d89be0981516ca7eb306e063d5027f4"
+    },
+    {
+      "target": "TEST_環境/vcruntime140_1.dll",
+      "sha256": "6a99bc0128e0c7d6cbbf615fcc26909565e17d4ca3451b97f8987f9c6acbc6c8"
+    },
+    {
+      "target": "TEST_環境/winsound.pyd",
+      "sha256": "100e8d676777603c7258daf9b2f23ef001f09f1596d8708de359326fff72bddd"
+    },
+    {
+      "target": "TEST_Core/TEST.exe",
+      "sha256": "2cb529f44a06f172a18753267e363c1df1106b31c09c64e6b29627f99c816aa4"
+    },
+    {
+      "target": "TEST_風扇/ADLXBindings.dll",
+      "sha256": "34df13a007903ba523120fb6b1158487a0d8c0f680baba2427391c5288c3ca7b"
+    },
+    {
+      "target": "TEST_風扇/ADLXWrapper.dll",
+      "sha256": "93c2c6291bda6d6eb4a56dd2d620ae79538fa9545bc936be099427addb5e628f"
+    },
+    {
+      "target": "TEST_風扇/Autofac.dll",
+      "sha256": "535599a8612acb5a3b7209c6a4c1b47a9eb9930fd2bc0fb501c55e0f6dab45bd"
+    },
+    {
+      "target": "TEST_風扇/BlackSharp.Core.dll",
+      "sha256": "b17fec1a6fa78e562c7cd09a38ca9c11210e3f55a64d7eb08fa94479e4b2f861"
+    },
+    {
+      "target": "TEST_風扇/DiskInfoToolkit.dll",
+      "sha256": "b29d26b6216187533866860d21ca72bfe79a6e7c2535f889c908ccb33f2b5b7a"
+    },
+    {
+      "target": "TEST_風扇/Emoji.Wpf.dll",
+      "sha256": "21fb67eface68ade290ee88f8a6ccc3869e648a49b5f5ffbad686c3323d1cf03"
+    },
+    {
+      "target": "TEST_風扇/FanControl.exe",
+      "sha256": "3a7140f86c8e607e36e4f3428a9eb01a958e52e5d6871e263b863e321353bffd"
+    },
+    {
+      "target": "TEST_風扇/FanControl.exe.config",
+      "sha256": "81eed3b64be5120c9451b14366089d60ad1954c586a74e59af3b453ca2325c53"
+    },
+    {
+      "target": "TEST_風扇/FanControl.IPC.dll",
+      "sha256": "fcd67cb74957231c6f50ef21aae18979e8edf4770f314d6b9b8e3de33f0965ea"
+    },
+    {
+      "target": "TEST_風扇/FanControl.Library.dll",
+      "sha256": "2631110e18c60fdff657a37d2efc235407638ecd9235c9b965485c52879a2cae"
+    },
+    {
+      "target": "TEST_風扇/FanControl.Plugins.dll",
+      "sha256": "e754d5fa2881042a8f8de6c724b40c801cf6fc8690179c9f36e0f6e25499e273"
+    },
+    {
+      "target": "TEST_風扇/FanControl.Plugins.xml",
+      "sha256": "bee8478664c5b0d42b4da02bc85c2507983213b5732cbb335fc04640dcafb2ca"
+    },
+    {
+      "target": "TEST_風扇/FanControl.Resources.dll",
+      "sha256": "ac3747be515f6490900bdbbb807a829688ac203c1db1b9ce0ad6cb11c9d961fc"
+    },
+    {
+      "target": "TEST_風扇/FanControl.Service.exe",
+      "sha256": "34669964afc22d2f74c3374031263c8091a2c60269f8f5a7609b2430d21042c6"
+    },
+    {
+      "target": "TEST_風扇/FanControl.Service.exe.config",
+      "sha256": "63f883a8075b3835c8614fc52c66adbfd567a07f566ae8ffdac059374ea3eb1d"
+    },
+    {
+      "target": "TEST_風扇/GongSolutions.WPF.DragDrop.dll",
+      "sha256": "d383691426d27d60094e2bccd042e2509187ade1a6236238c92d583bd95c9b8b"
+    },
+    {
+      "target": "TEST_風扇/Google.Protobuf.dll",
+      "sha256": "3f7177590425210289078dc2c91701f5c27ad021353e15cfa37928f1f2ed7f4e"
+    },
+    {
+      "target": "TEST_風扇/Grpc.Core.Api.dll",
+      "sha256": "07639beafcaf9bf73487f124c74ed42ae73aa074bb6d9112c616ee9d14cc585b"
+    },
+    {
+      "target": "TEST_風扇/GrpcDotNetNamedPipes.dll",
+      "sha256": "5083495184291804545f9b2fe0bc67e73504f7dbb2331c2ebf5f0a2ab1a709b4"
+    },
+    {
+      "target": "TEST_風扇/HidSharp.dll",
+      "sha256": "d86690efde30ea9179f669320f39148853793b743a98b531afeaf30598e22f54"
+    },
+    {
+      "target": "TEST_風扇/LibreHardwareMonitorLib.dll",
+      "sha256": "0f044f240575d09c00cc36a85ecca233854d5881df25294b8f0c222f119e0d11"
+    },
+    {
+      "target": "TEST_風扇/LibreHardwareMonitorLib.xml",
+      "sha256": "abc84843fe5e9de8d039e35435c3a17abf9f555d31c84abc3ca5250fb008b4b3"
+    },
+    {
+      "target": "TEST_風扇/MaterialDesignColors.dll",
+      "sha256": "a8c9668921fa444e36aa656e5eb99a40abf6c86d9a73f5d7e538e6dce44ad5bb"
+    },
+    {
+      "target": "TEST_風扇/MaterialDesignThemes.Wpf.dll",
+      "sha256": "ceedc9b84bcad3ead9e481a7dc40c4d00cb8a8b3a1785ee01e59fb19cc2d9716"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Bcl.AsyncInterfaces.dll",
+      "sha256": "1009baea2f1a87f37530a1eecedbe1e7f42227df8ca9775799bf403cee022325"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Bcl.HashCode.dll",
+      "sha256": "3a4e851ee5fc0f6182aa5a3d65dc56fcd6979b65334b5c3b92fbdc791457c0ab"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Configuration.Abstractions.dll",
+      "sha256": "4003a50ac1c09320873f42f672159a9950da26822068c3fb07bf5cc9c0e9a0e1"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Configuration.Binder.dll",
+      "sha256": "4b067556e0fb960daf207e972acebc50cf993430bc0461c9f8a5928d762a2f04"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Configuration.CommandLine.dll",
+      "sha256": "e7c249ab06b199cb8a2500295e2ae2df993b6f58ce4c9184fd3504be8e7fee05"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Configuration.dll",
+      "sha256": "ba3d5f80ca47fc32950b6e7493d610bf94ee2c73bb48d2809ea535c1bbfe5596"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Configuration.EnvironmentVariables.dll",
+      "sha256": "aace05d903ce74fbe657a1b39b6017a595c828796da4782078b729efd195f5ec"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Configuration.FileExtensions.dll",
+      "sha256": "c0e229dd323128b8459e4fa08bb41565723ecb51f3d5f71c7e6bb298bbb366dd"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Configuration.Json.dll",
+      "sha256": "65c072dd8a53d036ee3c7936b0b768e19fff28dd1993b352ff930270282c2058"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Configuration.UserSecrets.dll",
+      "sha256": "f9face669ceeb4377eaab2f8e504dfad2ce9a2e390f8b15d4104a159c152a952"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+      "sha256": "bebe73dcc4667ef7103f470e6346677fe8fa5e6d6f62cc1ddd9b45fe766499e0"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.DependencyInjection.dll",
+      "sha256": "3a6aa5830baeb80c2bcd5e621cea9cacc563a323e1b4b5f8351d9ba4d0799f3d"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Diagnostics.Abstractions.dll",
+      "sha256": "c39bf68cf1f979eb07996633b2412fd8bb2e309f162c010f4be86695031fc9a9"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Diagnostics.dll",
+      "sha256": "88f9efab243fbe0bf1502134c5a7acf0d3e9ec8068dec89a6d123dfd556aec05"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.FileProviders.Abstractions.dll",
+      "sha256": "6cafcb0a8c958c0e9b750845007e63502c5324233c843389c202849f1b973da0"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.FileProviders.Physical.dll",
+      "sha256": "f277ab4b5655b5216048f36667532e99466151c65b6390fa394b9cf8f8234614"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.FileSystemGlobbing.dll",
+      "sha256": "35b3207cd0b09dafcad9ea39dcd7c5d94a2da5ec4ba721ca595bb6a2e0f11c35"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Hosting.Abstractions.dll",
+      "sha256": "ca068dcc55e18341f0d1c745324896d9e20d4601916d00b7579d5702415f147c"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Hosting.dll",
+      "sha256": "961a9df3b57abea3cc4d6bef9429986604bf2f53f9e134b9319152efc2bde5af"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Logging.Abstractions.dll",
+      "sha256": "2ffe4217a536b447ba35ca5b6ad79b3a43dd3041dab07b266615780786a33c17"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Logging.Configuration.dll",
+      "sha256": "6a5b4bfde624e93507468b7d400cc9194cf489d2cb2cdf3fc4ff0403248139c1"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Logging.Console.dll",
+      "sha256": "f84962c09ff7c0ed5ffc2d75d75b6451e68e1496a44fa657f712d9bff8abc5d5"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Logging.Debug.dll",
+      "sha256": "c9825a65f44b41762358014bde310dce475d8e667c8a9d60968a3796ce48ac08"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Logging.dll",
+      "sha256": "9905dd8dff8678020d6ae64279c9549450cb66003df56a4364cbf801fe593733"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Logging.EventLog.dll",
+      "sha256": "ba2092ad2f6e3bdd2fbf7b732caee4765c0d2a49958c0a35ef39582818c45508"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Logging.EventSource.dll",
+      "sha256": "06e091633ebed88ed92a358697512a5e92f258155a6872a41880d1efbe7e6091"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Options.ConfigurationExtensions.dll",
+      "sha256": "a6220e8b98b6d25e0ef139ba89a8e39f0f9d2bfd62838f11c1982be9b2cc11f1"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Options.dll",
+      "sha256": "92eed97350535d6d6e7a7e4503ed4727525ceea4de938cf198539084738ebefa"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Extensions.Primitives.dll",
+      "sha256": "aac712e8140704197e4a78f77ba2d82989d71594f6ebb7accd1731e2ce211bf2"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Toolkit.Uwp.Notifications.dll",
+      "sha256": "a0b5be9580bf6548f685d79e5439f6d946ef57e013d201f946b2a894e7441804"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Win32.TaskScheduler.dll",
+      "sha256": "622cf3503b38acfc6b059aaabf72aafb3edbde6875e6610efd87218a3c0cbb8b"
+    },
+    {
+      "target": "TEST_風扇/Microsoft.Xaml.Behaviors.dll",
+      "sha256": "8e77a1dd5e2df4d4af801376cc3428b082eb49fcb6e647b933967fae12ad9d5d"
+    },
+    {
+      "target": "TEST_風扇/Newtonsoft.Json.dll",
+      "sha256": "f0c07af0e84d4dd4da4bd7823ba4535bc0481b3bf623ed40b659b68147a6bb75"
+    },
+    {
+      "target": "TEST_風扇/NvAPIWrapper.dll",
+      "sha256": "af363fcd167cfd40819faef2cf028d9c1c3e400beb8486854113885ee993cabb"
+    },
+    {
+      "target": "TEST_風扇/RAMSPDToolkit-NDD.dll",
+      "sha256": "0441f1e4d022a6ceb893827d4c4cc45b4f5c962434017885c1c92ffe9caa2f7a"
+    },
+    {
+      "target": "TEST_風扇/Resources/EULA-Licenses.txt",
+      "sha256": "74b4436d64c395587ce2c06ec97ee61752092ee523cf49afa90a35b6cd5674f2"
+    },
+    {
+      "target": "TEST_風扇/Stfu.dll",
+      "sha256": "81b5cff11e5b06eef3f8ac19effd16803c16bab8f73261a7ce7c0d29ab398016"
+    },
+    {
+      "target": "TEST_風扇/System.Buffers.dll",
+      "sha256": "2d78d770c9cb997199154ae8c018b9f1d1efbc86729f7264dde6dbad2a12cac3"
+    },
+    {
+      "target": "TEST_風扇/System.CodeDom.dll",
+      "sha256": "6c0ff30324213f43aaf41b3906c596936b3a585bb100c9e8939b52dae6d5a93f"
+    },
+    {
+      "target": "TEST_風扇/System.Collections.Immutable.dll",
+      "sha256": "be426242ee7f53cab80e46d41b6667e75f1c1d2feefe1c9ba6d73a7abee9b0bc"
+    },
+    {
+      "target": "TEST_風扇/System.Diagnostics.DiagnosticSource.dll",
+      "sha256": "07f1825f419f32f83c59a45acd491a9e8c6bdc3a4a37fc27f7cae27876b95a20"
+    },
+    {
+      "target": "TEST_風扇/System.Drawing.Common.dll",
+      "sha256": "fe84f6134442e29f93eb53271a98077b6d2cf1e50e353ade8319deaf34ae5efc"
+    },
+    {
+      "target": "TEST_風扇/System.Formats.Nrbf.dll",
+      "sha256": "e539085e80e255c9d56c691ec5f0be5dc11c0b818321f35ad330b967949271d5"
+    },
+    {
+      "target": "TEST_風扇/System.IO.Pipelines.dll",
+      "sha256": "eb4d58a1769115fe6452437fa0e5e0bc22e140366d67e688b81d1dc8f61ec74a"
+    },
+    {
+      "target": "TEST_風扇/System.Memory.dll",
+      "sha256": "d5e8e4866f9cfa66f7765660f84b210198893e55335487afe5ebda342c0e913d"
+    },
+    {
+      "target": "TEST_風扇/System.Numerics.Vectors.dll",
+      "sha256": "20c2fa81b8c70d651099d762954f285fd4f942e63b2d7217c145dab8d4b2f4c9"
+    },
+    {
+      "target": "TEST_風扇/System.Reflection.Metadata.dll",
+      "sha256": "162dc62b6ecd0f0b8fe67e0ab4cbe520ee9ec75cce9b9a8f71d4374228b2ac75"
+    },
+    {
+      "target": "TEST_風扇/System.Resources.Extensions.dll",
+      "sha256": "3c86aa38d9fdc46397c1a35e2dc8819c13b19eb56eec5168bab3d55b497049e7"
+    },
+    {
+      "target": "TEST_風扇/System.Runtime.CompilerServices.Unsafe.dll",
+      "sha256": "08cbd7278b66f1e68425a82d4b97181a4130d93e3dd91831407aba7212ccdacf"
+    },
+    {
+      "target": "TEST_風扇/System.Security.AccessControl.dll",
+      "sha256": "ff14c5f628b9a6798d173aefbba0a43d61e66f715108e2576ac0d3dfab9071d0"
+    },
+    {
+      "target": "TEST_風扇/System.Security.Principal.Windows.dll",
+      "sha256": "b4d8e15adc235d0e858e39b5133e5d00a4baa8c94f4f39e3b5e791b0f9c0c806"
+    },
+    {
+      "target": "TEST_風扇/System.Text.Encodings.Web.dll",
+      "sha256": "2ca6caee74e5e7c3714ed8284970813befaba446fc82e17d9d07397eed8d93d7"
+    },
+    {
+      "target": "TEST_風扇/System.Text.Json.dll",
+      "sha256": "8bc0e77a67553d9b16eee8981365f1b13d9de714a540cef1051daf0d1a392eba"
+    },
+    {
+      "target": "TEST_風扇/System.Threading.AccessControl.dll",
+      "sha256": "aa90ae3c302c11f40cd22328f018fb91ca4765153158d2c8802805a96a3d7b5b"
+    },
+    {
+      "target": "TEST_風扇/System.Threading.Tasks.Extensions.dll",
+      "sha256": "af4e13ef418fd89b432de20cd1dfb7fa10a7179c8dd049c9856316e50c5949ca"
+    },
+    {
+      "target": "TEST_風扇/Typography.GlyphLayout.dll",
+      "sha256": "07d669821fac46f48012b6025a7f09abe666904f3a2f0973d4b435d411dc6bc4"
+    },
+    {
+      "target": "TEST_風扇/Typography.OpenFont.dll",
+      "sha256": "023173bce8da89cbbdf0c1ad7892c602f8492a52c84b9a930d585b57723bfdae"
+    }
+  ]
+}

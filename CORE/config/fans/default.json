@@ -1,0 +1,573 @@
+{
+  "__VERSION__": "283",
+  "FanControl": {
+    "Controls": [
+      {
+        "NickName": "Fan #1",
+        "Identifier": "/lpc/it8696e/control/0",
+        "IsHidden": false,
+        "Enable": true,
+        "SelectedFanCurve": null,
+        "SelectedOffset": 0,
+        "PairedFanSensor": {
+          "Identifier": "/lpc/it8696e/fan/0"
+        },
+        "SelectedStart": 0,
+        "SelectedStop": 0,
+        "MinimumPercent": 50,
+        "SelectedCommandStepUp": 100,
+        "SelectedCommandStepDown": 100,
+        "ManualControlValue": 50,
+        "ManualControl": true,
+        "ForceApply": true,
+        "Calibration": [
+          [
+            0,
+            479,
+            false
+          ],
+          [
+            1,
+            491,
+            false
+          ],
+          [
+            10,
+            654,
+            false
+          ],
+          [
+            20,
+            829,
+            false
+          ],
+          [
+            30,
+            994,
+            false
+          ],
+          [
+            40,
+            1158,
+            false
+          ],
+          [
+            50,
+            1311,
+            false
+          ],
+          [
+            60,
+            1467,
+            false
+          ],
+          [
+            70,
+            1611,
+            false
+          ],
+          [
+            80,
+            1754,
+            false
+          ],
+          [
+            90,
+            1893,
+            false
+          ],
+          [
+            100,
+            2045,
+            false
+          ]
+        ]
+      },
+      {
+        "NickName": "Fan #2",
+        "Identifier": "/lpc/it8696e/control/1",
+        "IsHidden": false,
+        "Enable": true,
+        "SelectedFanCurve": null,
+        "SelectedOffset": 0,
+        "PairedFanSensor": {
+          "Identifier": "/lpc/it8696e/fan/1"
+        },
+        "SelectedStart": 0,
+        "SelectedStop": 0,
+        "MinimumPercent": 50,
+        "SelectedCommandStepUp": 100,
+        "SelectedCommandStepDown": 100,
+        "ManualControlValue": 50,
+        "ManualControl": true,
+        "ForceApply": true,
+        "Calibration": [
+          [
+            1,
+            660,
+            false
+          ],
+          [
+            10,
+            660,
+            false
+          ],
+          [
+            20,
+            664,
+            false
+          ],
+          [
+            30,
+            759,
+            false
+          ],
+          [
+            40,
+            889,
+            false
+          ],
+          [
+            50,
+            998,
+            false
+          ],
+          [
+            60,
+            1111,
+            false
+          ],
+          [
+            70,
+            1216,
+            false
+          ],
+          [
+            80,
+            1304,
+            false
+          ],
+          [
+            90,
+            1402,
+            false
+          ],
+          [
+            100,
+            1520,
+            false
+          ]
+        ]
+      },
+      {
+        "NickName": "Fan #3",
+        "Identifier": "/lpc/it8696e/control/2",
+        "IsHidden": true,
+        "Enable": false,
+        "SelectedFanCurve": null,
+        "SelectedOffset": 0,
+        "PairedFanSensor": null,
+        "SelectedStart": 0,
+        "SelectedStop": 0,
+        "MinimumPercent": 0,
+        "SelectedCommandStepUp": 8,
+        "SelectedCommandStepDown": 8,
+        "ManualControlValue": 50,
+        "ManualControl": false,
+        "ForceApply": false,
+        "Calibration": []
+      },
+      {
+        "NickName": "Fan #4",
+        "Identifier": "/lpc/it8696e/control/3",
+        "IsHidden": true,
+        "Enable": false,
+        "SelectedFanCurve": null,
+        "SelectedOffset": 0,
+        "PairedFanSensor": null,
+        "SelectedStart": 0,
+        "SelectedStop": 0,
+        "MinimumPercent": 0,
+        "SelectedCommandStepUp": 8,
+        "SelectedCommandStepDown": 8,
+        "ManualControlValue": 50,
+        "ManualControl": false,
+        "ForceApply": false,
+        "Calibration": []
+      },
+      {
+        "NickName": "Fan #5",
+        "Identifier": "/lpc/it8696e/control/4",
+        "IsHidden": true,
+        "Enable": false,
+        "SelectedFanCurve": null,
+        "SelectedOffset": 0,
+        "PairedFanSensor": null,
+        "SelectedStart": 0,
+        "SelectedStop": 0,
+        "MinimumPercent": 0,
+        "SelectedCommandStepUp": 8,
+        "SelectedCommandStepDown": 8,
+        "ManualControlValue": 50,
+        "ManualControl": false,
+        "ForceApply": false,
+        "Calibration": []
+      },
+      {
+        "NickName": "Fan #6",
+        "Identifier": "/lpc/it8696e/control/5",
+        "IsHidden": false,
+        "Enable": true,
+        "SelectedFanCurve": null,
+        "SelectedOffset": 0,
+        "PairedFanSensor": {
+          "Identifier": "/lpc/it8696e/fan/5"
+        },
+        "SelectedStart": 0,
+        "SelectedStop": 0,
+        "MinimumPercent": 50,
+        "SelectedCommandStepUp": 100,
+        "SelectedCommandStepDown": 100,
+        "ManualControlValue": 50,
+        "ManualControl": true,
+        "ForceApply": true,
+        "Calibration": [
+          [
+            0,
+            634,
+            false
+          ],
+          [
+            10,
+            637,
+            false
+          ],
+          [
+            20,
+            637,
+            false
+          ],
+          [
+            30,
+            732,
+            false
+          ],
+          [
+            40,
+            859,
+            false
+          ],
+          [
+            50,
+            972,
+            false
+          ],
+          [
+            60,
+            1082,
+            false
+          ],
+          [
+            70,
+            1176,
+            false
+          ],
+          [
+            80,
+            1274,
+            false
+          ],
+          [
+            90,
+            1353,
+            false
+          ],
+          [
+            100,
+            1448,
+            false
+          ]
+        ]
+      },
+      {
+        "NickName": "Control 1 - NVIDIA GeForce RTX 4090",
+        "Identifier": "NVApiWrapper/0-AD102-A/control/0",
+        "IsHidden": false,
+        "Enable": true,
+        "SelectedFanCurve": null,
+        "SelectedOffset": 0,
+        "PairedFanSensor": {
+          "Identifier": "NVApiWrapper/0-AD102-A/fan/0"
+        },
+        "SelectedStart": 9,
+        "SelectedStop": 6,
+        "MinimumPercent": 80,
+        "SelectedCommandStepUp": 20,
+        "SelectedCommandStepDown": 20,
+        "ManualControlValue": 80,
+        "ManualControl": true,
+        "ForceApply": true,
+        "Calibration": [
+          [
+            0,
+            0,
+            false
+          ],
+          [
+            1,
+            995,
+            false
+          ],
+          [
+            10,
+            995,
+            false
+          ],
+          [
+            20,
+            995,
+            false
+          ],
+          [
+            30,
+            996,
+            false
+          ],
+          [
+            40,
+            1302,
+            false
+          ],
+          [
+            50,
+            1609,
+            false
+          ],
+          [
+            60,
+            1909,
+            false
+          ],
+          [
+            70,
+            2218,
+            false
+          ],
+          [
+            80,
+            2520,
+            false
+          ],
+          [
+            90,
+            2832,
+            false
+          ],
+          [
+            100,
+            3106,
+            false
+          ]
+        ]
+      },
+      {
+        "NickName": "Control 2 - NVIDIA GeForce RTX 4090",
+        "Identifier": "NVApiWrapper/0-AD102-A/control/1",
+        "IsHidden": false,
+        "Enable": true,
+        "SelectedFanCurve": null,
+        "SelectedOffset": 0,
+        "PairedFanSensor": {
+          "Identifier": "NVApiWrapper/0-AD102-A/fan/1"
+        },
+        "SelectedStart": 9,
+        "SelectedStop": 6,
+        "MinimumPercent": 80,
+        "SelectedCommandStepUp": 20,
+        "SelectedCommandStepDown": 20,
+        "ManualControlValue": 80,
+        "ManualControl": true,
+        "ForceApply": true,
+        "Calibration": [
+          [
+            0,
+            0,
+            false
+          ],
+          [
+            1,
+            996,
+            false
+          ],
+          [
+            10,
+            998,
+            false
+          ],
+          [
+            20,
+            998,
+            false
+          ],
+          [
+            30,
+            998,
+            false
+          ],
+          [
+            40,
+            1299,
+            false
+          ],
+          [
+            50,
+            1603,
+            false
+          ],
+          [
+            60,
+            1907,
+            false
+          ],
+          [
+            70,
+            2214,
+            false
+          ],
+          [
+            80,
+            2520,
+            false
+          ],
+          [
+            90,
+            2816,
+            false
+          ],
+          [
+            100,
+            3091,
+            false
+          ]
+        ]
+      }
+    ],
+    "CustomSensors": [],
+    "FanCurves": [
+      {
+        "Name": "Flat",
+        "IsHidden": false,
+        "CommandMode": 0,
+        "Percent": 50
+      },
+      {
+        "Name": "顯卡自動調整_80上限",
+        "IsHidden": false,
+        "CommandMode": 0,
+        "MaximumCommand": 79,
+        "MinimumTemperature": 20,
+        "MaximumTemperature": 120,
+        "Points": [
+          "20,50",
+          "40,50",
+          "50,65",
+          "55,75",
+          "58,79",
+          "120,79"
+        ],
+        "SelectedHysteresis": 1,
+        "SelectedResponseTime": 1,
+        "OneWayHysteresis": false,
+        "IgnoreHysteresisAtLimits": true,
+        "SelectedTempSource": {
+          "Identifier": "NVApiWrapper/0-AD102-A/sensor/0",
+          "Name": "GPU",
+          "NickName": "GPU",
+          "IsHidden": false
+        }
+      }
+    ],
+    "FanSensors": [
+      {
+        "Identifier": "/lpc/it8696e/fan/0",
+        "IsHidden": false,
+        "NickName": "Fan #1"
+      },
+      {
+        "Identifier": "/lpc/it8696e/fan/1",
+        "IsHidden": false,
+        "NickName": "Fan #2"
+      },
+      {
+        "Identifier": "/lpc/it8696e/fan/2",
+        "IsHidden": false,
+        "NickName": "Fan #3"
+      },
+      {
+        "Identifier": "/lpc/it8696e/fan/3",
+        "IsHidden": false,
+        "NickName": "Fan #4"
+      },
+      {
+        "Identifier": "/lpc/it8696e/fan/4",
+        "IsHidden": false,
+        "NickName": "Fan #5"
+      },
+      {
+        "Identifier": "/lpc/it8696e/fan/5",
+        "IsHidden": false,
+        "NickName": "Fan #6"
+      },
+      {
+        "Identifier": "NVApiWrapper/0-AD102-A/fan/0",
+        "IsHidden": false,
+        "NickName": "Control 1 - NVIDIA GeForce RTX 4090"
+      },
+      {
+        "Identifier": "NVApiWrapper/0-AD102-A/fan/1",
+        "IsHidden": false,
+        "NickName": "Control 2 - NVIDIA GeForce RTX 4090"
+      }
+    ],
+    "TemperatureSensors": []
+  },
+  "Sensors": {
+    "AdlxWrapperSettings": {
+      "Enabled": true
+    },
+    "DisabledPlugins": [],
+    "DisableStorageSensors": true,
+    "LibreHardwareMonitorSettings": {
+      "Controller": false,
+      "CPU": true,
+      "EmbeddedEC": true,
+      "ExcludeUsbStorage": false,
+      "GPU": true,
+      "Memory": false,
+      "Motherboard": true,
+      "PowerMonitor": false,
+      "PSU": false,
+      "Storage": false,
+      "StorageUpdateInterval": "00:01:00",
+      "ZeroRPMOverride": true
+    },
+    "NvAPIWrapperSettings": {
+      "Enabled": true,
+      "ZeroRPMOverride": true
+    }
+  },
+  "MainWindow": {
+    "Fahrenheit": false,
+    "HideCalibration": false,
+    "HideFanSpeedCards": true,
+    "HorizontalUIOrientation": false,
+    "PrimaryColor": "#FF5EABD0",
+    "SecondaryColor": "#FFAEEA00",
+    "SelectedTheme": "",
+    "ShowHiddenCards": false,
+    "SyncThemeWithWindows": true,
+    "SyncTrayIconColorWithWindows": true,
+    "TrayIconColor": null,
+    "TrayIcons": []
+  }
+}
